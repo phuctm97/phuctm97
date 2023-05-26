@@ -1,0 +1,22 @@
+{
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "javascript.suggestionActions.enabled": false,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": { "source.fixAll": true },
+  "editor.formatOnSave": true,
+  "files.trimTrailingWhitespace": true,
+  "files.trimFinalNewlines": true,
+  "files.insertFinalNewline": true,
+  "files.associations": {
+    "*.css": "tailwindcss",
+    ".env.*": "properties"
+  },
+  "files.exclude": {
+    "**/node_modules": true,
+    "pnpm-lock.yaml": true,
+    "**/.next": true,
+    "**/next-env.d.ts": true,
+    "**/out": true,
+    ".husky/_": true
+  }
+}

@@ -1,0 +1,13 @@
+# apps
+.next
+next-env.d.ts
+out
+
+# scripts
+packages/t[sw]config
+scripts
+.*.js
+*.config.js
+
+# dependencies
+node_modules

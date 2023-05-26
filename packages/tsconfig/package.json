@@ -1,0 +1,8 @@
+{
+  "name": "tsconfig",
+  "private": true,
+  "dependencies": {
+    "@types/node": "^18.16.15",
+    "typescript": "^5.0.4"
+  }
+}

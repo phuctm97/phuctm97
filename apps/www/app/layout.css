@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body {
+    @apply m-0 h-full w-full overflow-hidden bg-white p-0 text-gray-900 antialiased;
+  }
+}

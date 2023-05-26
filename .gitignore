@@ -1,0 +1,14 @@
+# apps
+.next
+next-env.d.ts
+out
+
+# dependencies
+node_modules
+
+# env
+.env*.local
+
+# misc
+.DS_Store
+*.pem
