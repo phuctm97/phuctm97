@@ -7,7 +7,7 @@
   "dependencies": {
     "@aws-cdk/aws-cognito-identitypool-alpha": "2.81.0-alpha.0",
     "aws-cdk-lib": "^2.81.0",
-    "constructs": "^10.2.34",
+    "constructs": "^10.2.35",
     "pascal-case": "^3.1.2"
   },
   "devDependencies": {

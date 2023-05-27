@@ -1,98 +1,77 @@
-import type { Root as MdastRoot } from "mdast";
 import type { Metadata } from "next";
 import type { ComponentPropsWithoutRef } from "react";
-import type { Node as UnistNode } from "unist";
 
 import type { SC } from "~/server";
 
+import { S3 } from "@aws-sdk/client-s3";
 import { clsx } from "clsx";
-import fs from "fs";
-import { toString as mdastToString } from "mdast-util-to-string";
 import Link from "next/link";
-import path from "path";
+import { notFound } from "next/navigation";
 import { forwardRef } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
-import remarkFrontmatter from "remark-frontmatter";
 import remarkGfm from "remark-gfm";
-import remarkParse from "remark-parse";
-import remarkStringify from "remark-stringify";
-import { unified } from "unified";
-import { select as unistUtilSelect } from "unist-util-select";
-import * as yaml from "yaml";
 
-const fileProcessor = unified()
-  .use(remarkParse)
-  .use(remarkFrontmatter, ["yaml"]);
-
-const contentProcessor = unified().use(remarkStringify);
-
-const contentDir = path.resolve(process.cwd(), "app", "blog", "[id]", "_");
+const s3 = new S3({
+  region: process.env.AWS_DEFAULT_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
+});
 
 interface PageParams {
   id: string;
 }
 
 export async function generateStaticParams(): Promise<PageParams[]> {
-  const files = await fs.promises.readdir(contentDir);
-  return files
-    .map((file) => path.parse(file))
-    .filter((file) => file.ext === ".mdx")
-    .map<PageParams>((file) => ({ id: file.name }));
+  const ids = new Set<string>();
+  const listObjectsV2Prefix = "blog/";
+  const listObjectsV2 = await s3.listObjectsV2({
+    Bucket: process.env.S3_ARCHIVE_BUCKET_NAME,
+    Prefix: listObjectsV2Prefix,
+  });
+  if (listObjectsV2.Contents)
+    for (const content of listObjectsV2.Contents) {
+      if (!content.Key) continue;
+      const id = content.Key.substring(listObjectsV2Prefix.length);
+      ids.add(id);
+    }
+  return Array.from(ids).map<PageParams>((id) => ({ id }));
 }
 
 interface PageProps {
   params: PageParams;
 }
 
-interface YamlNode extends UnistNode {
-  value: string;
-}
-
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
-  const file = await fs.promises.readFile(
-    path.resolve(contentDir, `${params.id}.mdx`)
-  );
-  const tree = await fileProcessor.run(fileProcessor.parse(file.toString()));
-  let title = "";
-  let description = "";
-  let publishedTime: string | undefined;
-  let tags: string[] | undefined;
-  const yamlNode = unistUtilSelect("yaml", tree) as YamlNode | null;
-  if (yamlNode) {
-    const yamlData = yaml.parse(yamlNode.value);
-    if (yamlData.title) title = yamlData.title;
-    if (yamlData.description) description = yamlData.description;
-    if (yamlData.date) publishedTime = yamlData.date;
-    if (yamlData.tags) tags = yamlData.tags;
-  }
-  if (!title) title = mdastToString(unistUtilSelect("heading[depth=1]", tree));
-  if (!description)
-    description = mdastToString(unistUtilSelect("paragraph", tree));
+  const object = await s3.getObject({
+    Bucket: process.env.S3_ARCHIVE_BUCKET_NAME,
+    Key: `blog/${params.id}`,
+  });
   return {
-    title,
-    description,
+    title: object.Metadata?.title,
+    description: object.Metadata?.description,
     openGraph: {
-      title,
-      description,
       type: "article",
+      title: object.Metadata?.title,
+      description: object.Metadata?.description,
+      publishedTime: object.Metadata?.date,
+      tags: object.Metadata?.tags?.split(","),
       authors: ["https://twitter.com/phuctm97"],
-      tags,
-      publishedTime,
     },
   };
 }
 
-async function getPageContent(params: PageParams): Promise<string> {
-  const file = await fs.promises.readFile(
-    path.resolve(contentDir, `${params.id}.mdx`)
-  );
-  const tree = await fileProcessor.run(fileProcessor.parse(file.toString()));
-  const contentChildren = tree.children.filter((n) => n.type !== "yaml");
-  const contentRoot: MdastRoot = { type: "root", children: contentChildren };
-  return contentProcessor.stringify(contentRoot);
+async function generateContent(params: PageParams): Promise<string> {
+  const object = await s3.getObject({
+    Bucket: process.env.S3_ARCHIVE_BUCKET_NAME,
+    Key: `blog/${params.id}`,
+  });
+  if (!object.Body) notFound();
+  return object.Body.transformToString();
 }
 
 const reactMarkdownRemarkPlugins = [remarkGfm];
@@ -125,7 +104,7 @@ const NavLink = forwardRef<HTMLAnchorElement, NavLinkProps>(
 if (process.env.NODE_ENV === "development") NavLink.displayName = "NavLink";
 
 const Page: SC<PageProps> = async ({ params }) => {
-  const content = await getPageContent(params);
+  const content = await generateContent(params);
   return (
     <>
       <header className="mx-auto mb-5 mt-10 w-full max-w-2xl overflow-hidden px-5 md:mt-12 lg:mt-14">
