@@ -9,7 +9,7 @@ import {
   ScrollAreaViewport,
 } from "@radix-ui/react-scroll-area";
 
-export const Scroll: FC<PropsWithChildren> = ({ children }) => (
+export const Shell: FC<PropsWithChildren> = ({ children }) => (
   <ScrollArea className="scroll-area h-full w-full">
     <ScrollAreaViewport className="scroll-area-viewport w-full">
       {children}

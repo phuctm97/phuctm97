@@ -6,6 +6,7 @@ import type { FC, PropsWithChildren } from "react";
 import { Inconsolata, Inter } from "next/font/google";
 
 import { Configuration } from "./configuration";
+import { Shell } from "./shell";
 
 export const metadata: Metadata = {
   title: "Minh-Phuc Tran",
@@ -26,7 +27,9 @@ const inter = Inter({
 const Layout: FC<PropsWithChildren> = ({ children }) => (
   <html className={`${inconsolata.variable} ${inter.variable}`} lang="en">
     <body>
-      <Configuration>{children}</Configuration>
+      <Configuration>
+        <Shell>{children}</Shell>
+      </Configuration>
     </body>
   </html>
 );
