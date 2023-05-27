@@ -3,6 +3,7 @@ import type { Root } from "mdast";
 import type { SC } from "~/server";
 
 import fs from "fs";
+import Link from "next/link";
 import path from "path";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
@@ -53,16 +54,28 @@ const reactMarkdownRehypePlugins = [rehypeRaw];
 const Page: SC<PageProps> = async ({ params }) => {
   const content = await getPageContent(params);
   return (
-    <main className="mx-auto w-full max-w-2xl overflow-hidden px-5 py-10 md:py-12 lg:py-14">
-      <article className="prose max-w-none">
-        <ReactMarkdown
-          remarkPlugins={reactMarkdownRemarkPlugins}
-          rehypePlugins={reactMarkdownRehypePlugins}
-        >
-          {content}
-        </ReactMarkdown>
-      </article>
-    </main>
+    <>
+      <header className="mx-auto mb-5 mt-10 w-full max-w-2xl overflow-hidden px-5 md:mt-12 lg:mt-14">
+        <nav className="flex w-full flex-row items-center justify-start overflow-hidden">
+          <Link
+            className="truncate text-gray-600 hover:text-gray-900 hover:underline"
+            href="/"
+          >
+            Home
+          </Link>
+        </nav>
+      </header>
+      <main className="mx-auto mb-10 w-full max-w-2xl overflow-hidden px-5 md:mb-12 lg:mb-14">
+        <article className="prose max-w-none">
+          <ReactMarkdown
+            remarkPlugins={reactMarkdownRemarkPlugins}
+            rehypePlugins={reactMarkdownRehypePlugins}
+          >
+            {content}
+          </ReactMarkdown>
+        </article>
+      </main>
+    </>
   );
 };
 
