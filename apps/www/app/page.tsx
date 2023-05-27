@@ -4,41 +4,32 @@ import { clsx } from "clsx";
 import Link from "next/link";
 import { forwardRef } from "react";
 
-const DefaultLink = forwardRef<
-  HTMLAnchorElement,
-  ComponentPropsWithoutRef<typeof Link>
->(({ className, ...props }, ref) => (
-  <Link
-    ref={ref}
-    className={clsx(
-      "text-blue-600 underline-offset-2 hover:text-blue-700 hover:underline",
-      className
-    )}
-    {...props}
-  />
-));
-
-if (process.env.NODE_ENV === "development")
-  DefaultLink.displayName = "DefaultLink";
-
-type ExternalLinkProps = Omit<
-  ComponentPropsWithoutRef<typeof DefaultLink>,
+type ContentLinkProps = Omit<
+  ComponentPropsWithoutRef<typeof Link>,
   "target" | "rel"
 >;
 
-const ExternalLink = forwardRef<HTMLAnchorElement, ExternalLinkProps>(
-  (props, ref) => (
-    <DefaultLink
-      ref={ref}
-      target="_blank"
-      rel="noopener noreferrer"
-      {...props}
-    />
-  )
+const ContentLink = forwardRef<HTMLAnchorElement, ContentLinkProps>(
+  ({ className, href, ...props }, ref) => {
+    const isExternal = typeof href === "string" && !href.startsWith("/");
+    return (
+      <Link
+        ref={ref}
+        className={clsx(
+          "text-blue-600 underline-offset-2 hover:text-blue-700 hover:underline",
+          className
+        )}
+        href={href}
+        target={isExternal ? "_blank" : undefined}
+        rel={isExternal ? "noopener noreferrer" : undefined}
+        {...props}
+      />
+    );
+  }
 );
 
 if (process.env.NODE_ENV === "development")
-  ExternalLink.displayName = "ExternalLink";
+  ContentLink.displayName = "ContentLink";
 
 const Page: FC = () => (
   <main className="mx-auto w-full max-w-2xl overflow-hidden px-5 py-10 md:py-12 lg:py-14">
@@ -58,8 +49,7 @@ const Page: FC = () => (
     </p>
     <p className="mb-10">
       See my tweets{" "}
-      <ExternalLink href="https://twitter.com/phuctm97">@phuctm97</ExternalLink>
-      .
+      <ContentLink href="https://twitter.com/phuctm97">@phuctm97</ContentLink>.
     </p>
     <h2 className="mb-5 font-semibold">Sources</h2>
     <p className="mb-5">
@@ -69,7 +59,7 @@ const Page: FC = () => (
     </p>
     <p>
       See my sources{" "}
-      <ExternalLink href="https://github.com/phuctm97">@phuctm97</ExternalLink>.
+      <ContentLink href="https://github.com/phuctm97">@phuctm97</ContentLink>.
     </p>
   </main>
 );
