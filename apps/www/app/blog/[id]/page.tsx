@@ -36,8 +36,9 @@ interface PageParams {
 export async function generateStaticParams(): Promise<PageParams[]> {
   const files = await fs.promises.readdir(contentDir);
   return files
-    .map((file) => path.basename(file))
-    .map<PageParams>((id) => ({ id }));
+    .map((file) => path.parse(file))
+    .filter((file) => file.ext === ".mdx")
+    .map<PageParams>((file) => ({ id: file.name }));
 }
 
 interface PageProps {
@@ -52,7 +53,7 @@ export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const file = await fs.promises.readFile(
-    path.resolve(contentDir, `${params.id}.md`)
+    path.resolve(contentDir, `${params.id}.mdx`)
   );
   const tree = await fileProcessor.run(fileProcessor.parse(file.toString()));
   let title = "";
@@ -86,7 +87,7 @@ export async function generateMetadata({
 
 async function getPageContent(params: PageParams): Promise<string> {
   const file = await fs.promises.readFile(
-    path.resolve(contentDir, `${params.id}.md`)
+    path.resolve(contentDir, `${params.id}.mdx`)
   );
   const tree = await fileProcessor.run(fileProcessor.parse(file.toString()));
   const contentChildren = tree.children.filter((n) => n.type !== "yaml");

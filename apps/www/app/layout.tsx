@@ -9,6 +9,7 @@ import { Configuration } from "./configuration";
 import { Shell } from "./shell";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://phuctm97.com"),
   title: "Minh-Phuc Tran",
   description:
     "I'm a full-time indie hacker. I build Internet products to solve problems for myself and others. I then charge a small fee to keep the lights on and live independently.",
