@@ -16,6 +16,7 @@
     "prettier-plugin-tailwindcss": "^0.3.0",
     "tsconfig": "workspace:^",
     "twconfig": "workspace:^",
-    "yaml": "^2.3.0"
+    "typescript": "^5.0.4",
+    "yaml": "^2.3.1"
   }
 }

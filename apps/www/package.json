@@ -6,7 +6,7 @@
     "build": "next build"
   },
   "dependencies": {
-    "@radix-ui/react-scroll-area": "^1.0.3",
+    "@radix-ui/react-scroll-area": "^1.0.4",
     "client-only": "^0.0.1",
     "clsx": "^1.2.1",
     "jotai": "^2.1.0",
@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "@types/mdast": "^3.0.11",
+    "@types/node": "^18.16.16",
     "@types/react": "^18.2.7",
     "@types/react-dom": "^18.2.4",
     "@types/unist": "^2.0.6",
@@ -33,6 +34,7 @@
     "postcss": "^8.4.23",
     "postcss-import": "^15.1.0",
     "tsconfig": "workspace:^",
-    "twconfig": "workspace:^"
+    "twconfig": "workspace:^",
+    "typescript": "^5.0.4"
   }
 }
