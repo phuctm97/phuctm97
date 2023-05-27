@@ -5,7 +5,9 @@ import type { SC } from "~/server";
 import fs from "fs";
 import path from "path";
 import ReactMarkdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
 import remarkFrontmatter from "remark-frontmatter";
+import remarkGfm from "remark-gfm";
 import remarkParse from "remark-parse";
 import remarkStringify from "remark-stringify";
 import { unified } from "unified";
@@ -45,9 +47,23 @@ async function getPageContent(params: PageParams): Promise<string> {
   return contentProcessor.stringify(contentTree);
 }
 
+const reactMarkdownRemarkPlugins = [remarkGfm];
+const reactMarkdownRehypePlugins = [rehypeRaw];
+
 const Page: SC<PageProps> = async ({ params }) => {
   const content = await getPageContent(params);
-  return <ReactMarkdown>{content}</ReactMarkdown>;
+  return (
+    <main className="mx-auto w-full max-w-2xl overflow-hidden px-5 py-10 md:py-12 lg:py-14">
+      <article className="prose max-w-none">
+        <ReactMarkdown
+          remarkPlugins={reactMarkdownRemarkPlugins}
+          rehypePlugins={reactMarkdownRehypePlugins}
+        >
+          {content}
+        </ReactMarkdown>
+      </article>
+    </main>
+  );
 };
 
 export default Page;
