@@ -67,6 +67,7 @@ const config = {
         "ts-nocheck": "allow-with-description",
       },
     ],
+    "@typescript-eslint/ban-types": ["error", { types: { Function: false } }],
     "@typescript-eslint/quotes": "error",
     "@typescript-eslint/consistent-type-imports": "error",
     "@typescript-eslint/consistent-type-definitions": "error",
@@ -89,7 +90,16 @@ const config = {
     "import/no-cycle": "error",
     "import/no-internal-modules": [
       "error",
-      { allow: ["next/*", "next/font/*", "react-dom/*", "jotai/*", "~/*"] },
+      {
+        allow: [
+          "next/*",
+          "next/font/*",
+          "react-dom/*",
+          "jotai/*",
+          "aws-cdk-lib/*",
+          "~/*",
+        ],
+      },
     ],
     "simple-import-sort/imports": [
       "error",
@@ -134,6 +144,7 @@ const config = {
         ),
       },
     },
+    react: { version: "18" },
     next: { rootDir: "apps/www" },
   },
   parserOptions: {

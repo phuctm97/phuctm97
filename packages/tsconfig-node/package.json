@@ -1,0 +1,7 @@
+{
+  "name": "tsconfig-node",
+  "private": true,
+  "dependencies": {
+    "tsconfig": "workspace:^"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "extends": "tsconfig/tsconfig.json",
+  "compilerOptions": {
+    "module": "nodenext",
+    "target": "esnext"
+  }
+}

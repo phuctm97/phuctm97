@@ -1,0 +1,21 @@
+{
+  "name": "aws",
+  "private": true,
+  "scripts": {
+    "build": "cdk synth"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-cognito-identitypool-alpha": "2.81.0-alpha.0",
+    "aws-cdk-lib": "^2.81.0",
+    "constructs": "^10.2.34",
+    "pascal-case": "^3.1.2"
+  },
+  "devDependencies": {
+    "@types/node": "^18.16.16",
+    "aws-cdk": "^2.81.0",
+    "esbuild": "^0.17.19",
+    "ts-node": "^10.9.1",
+    "tsconfig-node": "workspace:^",
+    "typescript": "^5.0.4"
+  }
+}

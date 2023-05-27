@@ -1,0 +1,4 @@
+{
+  "app": "ts-node index.ts",
+  "output": "out"
+}
