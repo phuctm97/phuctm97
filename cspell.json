@@ -10,24 +10,18 @@
   "words": [
     "awskms",
     "clsx",
-    "deno",
-    "devto",
-    "frontmatter",
-    "hashnode",
     "identitypool",
     "inconsolata",
     "mdast",
     "minh",
+    "nbundle",
     "nocheck",
     "nodenext",
     "phuc",
     "phuctm",
-    "probot",
     "rehype",
-    "subpage",
     "tailwindcss",
     "twconfig",
-    "unist",
-    "webdev"
+    "unist"
   ]
 }

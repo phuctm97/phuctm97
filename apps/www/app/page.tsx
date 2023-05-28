@@ -79,19 +79,84 @@ async function generateOldPosts(): Promise<Post[]> {
   return oldPosts;
 }
 
-type ContentLinkProps = Omit<
-  ComponentPropsWithoutRef<typeof Link>,
-  "target" | "rel"
->;
+interface Product {
+  name: string;
+  url?: string;
+  description: string;
+}
+
+const products: Product[] = [
+  {
+    name: "Bard Wow!",
+    url: "https://chrome.google.com/webstore/detail/bard-wow/amcbnnofeeceacckbhpplhhemgbmieon",
+    description: "Save & Access Bard Chat History",
+  },
+  {
+    name: "ChatFRIDAY",
+    url: "https://www.chatfriday.com",
+    description: "Enhanced UI/UX for ChatGPT",
+  },
+  {
+    name: "NextStatic",
+    url: "https://www.next-static.com",
+    description: "10x Cheaper Image Optimization for Next.js",
+  },
+  {
+    name: "Queue",
+    url: "https://www.queue.so",
+    description: "Twitter Scheduling Tool for Notion",
+  },
+  {
+    name: "Nora",
+    url: "https://www.getnora.page",
+    description: "Project Management Template for Notion",
+  },
+  {
+    name: "Clean Mac Desktop",
+    url: "https://phuctm97.gumroad.com/l/clean-mac-desktop",
+    description: "Clean & Backup MacOS Desktop in 1-click",
+  },
+  {
+    name: "nbundle",
+    description: "App Store & Developer Platform for Notion",
+  },
+  {
+    name: "Daily",
+    url: "https://www.usedaily.co",
+    description: "Simple Scratchpad for Pretty Much Anything",
+  },
+  {
+    name: "shell.how",
+    url: "https://www.shell.how",
+    description: "Explain Shell Commands",
+  },
+];
+
+interface ContentLinkProps
+  extends Omit<ComponentPropsWithoutRef<typeof Link>, "target" | "rel"> {
+  neutral?: boolean;
+}
+
+function isExternalContentLink(href: ContentLinkProps["href"]): boolean {
+  if (typeof href !== "string") return false;
+  try {
+    new URL(href);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 const ContentLink = forwardRef<HTMLAnchorElement, ContentLinkProps>(
-  ({ className, href, ...props }, ref) => {
-    const isExternal = typeof href === "string" && !href.startsWith("/");
+  ({ href, neutral, className, ...props }, ref) => {
+    const isExternal = isExternalContentLink(href);
     return (
       <Link
         ref={ref}
         className={clsx(
-          "text-blue-600 underline-offset-2 hover:text-blue-700 hover:underline",
+          neutral
+            ? "underline-offset-2 hover:underline"
+            : "text-blue-600 underline-offset-2 hover:text-blue-700 hover:underline",
           className
         )}
         href={href}
@@ -106,6 +171,17 @@ const ContentLink = forwardRef<HTMLAnchorElement, ContentLinkProps>(
 if (process.env.NODE_ENV === "development")
   ContentLink.displayName = "ContentLink";
 
+type MaybeLinkProps = Partial<ContentLinkProps>;
+
+const MaybeLink = forwardRef<HTMLAnchorElement, MaybeLinkProps>(
+  ({ href, ...props }, ref) => {
+    if (href) return <ContentLink ref={ref} href={href} {...props} />;
+    return <span ref={ref} {...props} />;
+  }
+);
+
+if (process.env.NODE_ENV === "development") MaybeLink.displayName = "MaybeLink";
+
 const Page: SC = async () => {
   const oldPosts = await generateOldPosts();
   return (
@@ -116,6 +192,17 @@ const Page: SC = async () => {
         problems for myself and others. I then charge a small fee to keep the
         lights on and live independently.
       </p>
+      <h2 className="mb-5 font-semibold">Products</h2>
+      <ul className="mb-10 space-y-5">
+        {products.map((product) => (
+          <li key={product.name}>
+            <MaybeLink href={product.url} neutral>
+              {product.name}
+            </MaybeLink>
+            <span className="text-gray-600"> - {product.description}</span>
+          </li>
+        ))}
+      </ul>
       <h2 className="mb-5 font-semibold">Tweets</h2>
       <p className="mb-5">
         I build in public on Twitter. I tweet product updates and learnings{" "}
@@ -150,12 +237,13 @@ const Page: SC = async () => {
               key={oldPost.id}
               className="flex flex-row items-start justify-between space-x-5"
             >
-              <Link
-                className="flex-1 select-none underline-offset-2 hover:underline"
+              <ContentLink
+                className="flex-1 select-none"
                 href={`blog/${oldPost.id}`}
+                neutral
               >
                 {oldPost.title}
-              </Link>
+              </ContentLink>
               {oldPost.date && (
                 <time
                   className="shrink-0 text-gray-400"
