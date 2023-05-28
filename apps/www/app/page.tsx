@@ -224,6 +224,19 @@ const Page: SC = async () => {
         See my sources{" "}
         <ContentLink href="https://github.com/phuctm97">@phuctm97</ContentLink>.
       </p>
+      <h2 className="mb-5 font-semibold">Stories</h2>
+      <p className="mb-5">
+        I post stories of folks I hang out with, places I travel to, and food I
+        eat, to keep a memory for myself and to connect with friends in a more
+        personal way.
+      </p>
+      <p className="mb-10">
+        See my stories{" "}
+        <ContentLink href="https://instagram.com/phuctm97">
+          @phuctm97
+        </ContentLink>
+        .
+      </p>
       <h2 className="mb-5 font-semibold">Posts</h2>
       <p className="mb-5 text-gray-600">(No recent posts)</p>
       <details className="mb-10">
