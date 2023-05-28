@@ -161,14 +161,19 @@ const Page: SC<PageProps> = async ({ params }) => {
           <hr />
           <footer>
             {content.tags.length > 0 && (
-              <ul className="pl-0">
-                Tags:
-                {content.tags.map((tag) => (
-                  <li key={tag} className="inline">
-                    {tag}
-                  </li>
-                ))}
-              </ul>
+              <>
+                <p className="m-0 inline p-0">Tags: </p>
+                <ul className="m-0 inline space-x-1 p-0">
+                  {content.tags.map((tag) => (
+                    <li
+                      key={tag}
+                      className="inline p-0 after:contents after:content-[','] last-of-type:after:content-none"
+                    >
+                      {tag}
+                    </li>
+                  ))}
+                </ul>
+              </>
             )}
             {content.date && (
               <p>
