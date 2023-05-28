@@ -102,7 +102,7 @@ export async function generateMetadata({
       type: "article",
       publishedTime: object.Metadata?.date,
       tags: object.Metadata?.tags?.split(","),
-      authors: [new URL("https://phuctm97.com")],
+      authors: [new URL("https://www.phuctm97.com")],
     },
     alternates: {
       canonical: `blog/${params.id}`,

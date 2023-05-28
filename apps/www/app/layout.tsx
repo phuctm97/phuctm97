@@ -9,7 +9,7 @@ import { Configuration } from "./configuration";
 import { Shell } from "./shell";
 
 const info = {
-  url: new URL("https://phuctm97.com"),
+  url: new URL("https://www.phuctm97.com"),
   title: { default: "Minh-Phuc Tran", template: "%s | Minh-Phuc Tran" },
   description:
     "I'm a full-time indie hacker. I build Internet products to solve problems for myself and others. I then charge a small fee to keep the lights on and live independently.",

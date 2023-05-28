@@ -1,15 +1,14 @@
 /** @type {import('next').NextConfig} */
 const config = {
   eslint: { ignoreDuringBuilds: true },
-  rewrites: () => ({
-    beforeFiles: [
-      {
-        has: [{ type: "host", value: "blog.phuctm97.com" }],
-        source: "/:path*",
-        destination: "/blog/:path*",
-      },
-    ],
-  }),
+  redirects: () => [
+    {
+      source: "/:path*",
+      has: [{ type: "host", value: "blog.phuctm97.com" }],
+      destination: "https://www.phuctm97.com/blog/:path*",
+      permanent: true,
+    },
+  ],
 };
 
 module.exports = config;
