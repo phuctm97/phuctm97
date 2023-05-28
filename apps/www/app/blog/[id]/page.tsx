@@ -3,7 +3,6 @@ import type { ComponentPropsWithoutRef } from "react";
 
 import type { SC } from "~/server";
 
-import { S3 } from "@aws-sdk/client-s3";
 import { clsx } from "clsx";
 import { select as hastSelect } from "hast-util-select";
 import { toText as hastToText } from "hast-util-to-text";
@@ -17,13 +16,7 @@ import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import { unified } from "unified";
 
-const s3 = new S3({
-  region: process.env.AWS_DEFAULT_REGION,
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  },
-});
+import { s3 } from "~/server";
 
 interface PageParams {
   id: string;
@@ -132,7 +125,7 @@ const NavLink = forwardRef<HTMLAnchorElement, NavLinkProps>(
       <Link
         ref={ref}
         className={clsx(
-          "truncate text-gray-600 hover:text-gray-900 hover:underline",
+          "truncate text-gray-600 underline-offset-2 hover:text-gray-900 hover:underline",
           className
         )}
         href={href}
@@ -150,7 +143,7 @@ const Page: SC<PageProps> = async ({ params }) => {
   const content = await generateContent(params);
   return (
     <>
-      <header className="mx-auto mb-5 mt-10 w-full max-w-2xl overflow-hidden px-5 md:mt-12 lg:mt-14">
+      <header className="mx-auto mb-5 w-full max-w-2xl overflow-hidden px-5 pt-10 md:pt-12 lg:pt-14">
         <nav className="flex w-full flex-row items-center justify-start space-x-5 overflow-hidden">
           <NavLink href="/">Home</NavLink>
           <NavLink href="https://twitter.com/phuctm97">Twitter</NavLink>
