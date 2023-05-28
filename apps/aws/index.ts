@@ -1,6 +1,7 @@
 import type { AppProps, StackProps } from "aws-cdk-lib";
 
 import { App, Stack } from "aws-cdk-lib";
+import * as iam from "aws-cdk-lib/aws-iam";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as s3 from "aws-cdk-lib/aws-s3";
 
@@ -11,6 +12,9 @@ class MyStack extends Stack {
     super(app, id, props);
 
     const archiveBucket = new s3.Bucket(this, "ArchiveBucket");
+
+    const vercelUser = new iam.User(this, "VercelUser");
+    archiveBucket.grantReadWrite(vercelUser, "blog/*");
 
     addons.cfn.outputs(this, {
       ArchiveBucketName: archiveBucket.bucketName,
