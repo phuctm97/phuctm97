@@ -1,0 +1,20 @@
+{
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": { "source.fixAll": "always" },
+  "files.associations": { ".env*": "properties" },
+  "files.trimTrailingWhitespace": true,
+  "files.trimFinalNewlines": true,
+  "files.insertFinalNewline": true,
+  "files.exclude": {
+    "pnpm-lock.yaml": true,
+    "next-env.d.ts": true,
+    "node_modules": true,
+    ".next": true,
+    ".swc": true,
+    "**/.vercel": true,
+    "**/*.tsbuildinfo": true
+  }
+}

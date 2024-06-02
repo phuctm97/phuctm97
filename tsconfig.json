@@ -1,0 +1,11 @@
+{
+  "extends": "@tsconfig/next/tsconfig.json",
+  "compilerOptions": {
+    "plugins": [{ "name": "next" }],
+    "paths": { "~/*": ["./*"] },
+    "target": "es2018",
+    "allowJs": false
+  },
+  "include": [".next/types/**/*.ts", "**/*.d.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules"]
+}

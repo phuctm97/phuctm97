@@ -1,0 +1,47 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "clean",
+      "icon": { "id": "trash" },
+      "type": "process",
+      "command": "pnpm",
+      "args": ["clean"],
+      "problemMatcher": []
+    },
+    {
+      "label": "format",
+      "icon": { "id": "replace-all" },
+      "type": "process",
+      "command": "pnpm",
+      "args": ["format"],
+      "problemMatcher": []
+    },
+    {
+      "label": "typecheck",
+      "icon": { "id": "symbol-type-parameter" },
+      "type": "process",
+      "command": "pnpm",
+      "args": ["tsc"],
+      "problemMatcher": ["$tsc"]
+    },
+    {
+      "label": "lint",
+      "icon": { "id": "debug" },
+      "type": "process",
+      "command": "pnpm",
+      "args": ["lint"],
+      "problemMatcher": []
+    },
+    {
+      "label": "build",
+      "icon": { "id": "tools" },
+      "isBuildCommand": true,
+      "group": { "kind": "build", "isDefault": true },
+      "type": "process",
+      "command": "pnpm",
+      "args": ["build"],
+      "problemMatcher": []
+    }
+  ]
+}
