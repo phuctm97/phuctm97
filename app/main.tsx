@@ -14,7 +14,7 @@ export function Main({ children }: PropsWithChildren): ReactNode {
   return (
     <main
       ref={ref}
-      css="position: relative; width: 100%; height: calc(100% - 48px); overflow: hidden;"
+      css="position: relative; z-index: 0; width: 100%; height: calc(100% - 48px); overflow: hidden;"
     >
       {children}
     </main>

@@ -4,7 +4,7 @@ import { useAtomValue } from "jotai";
 
 import { DefaultWindow } from "./default-window";
 import { WelcomeWindow } from "./welcome-window";
-import { activeWindowsAtom } from "./window";
+import { openWindowsAtom } from "./window";
 
 interface ConnectedWindowProps {
   window: string;
@@ -22,7 +22,7 @@ function ConnectedWindow({ window }: ConnectedWindowProps): ReactNode {
 }
 
 export function Windows(): ReactNode {
-  const windows = useAtomValue(activeWindowsAtom);
+  const windows = useAtomValue(openWindowsAtom);
   return (
     <>
       {windows.map((window) => (

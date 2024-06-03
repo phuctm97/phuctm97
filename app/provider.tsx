@@ -45,8 +45,8 @@ function createServerStyleSheet(): ServerStyleSheet | undefined {
 
 const shouldForwardProp: ComponentPropsWithoutRef<
   typeof StyleSheetManager
->["shouldForwardProp"] = (prop, elementToBeCreated) =>
-  typeof elementToBeCreated === "string" ? isPropValid(prop) : true;
+>["shouldForwardProp"] = (prop, target) =>
+  typeof target === "string" ? isPropValid(prop) : !prop.startsWith("$");
 
 export function Provider({ children }: PropsWithChildren): ReactNode {
   const [serverStyleSheet] = useState(createServerStyleSheet);

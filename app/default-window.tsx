@@ -8,7 +8,11 @@ import { styled } from "styled-components";
 
 import { mainAtom } from "./main";
 import { useNullableState } from "./use-nullable-state";
-import { closeWindowAtom } from "./window";
+import {
+  closeWindowAtom,
+  isActiveWindowAtomFamily,
+  openWindowAtom,
+} from "./window";
 
 const CloseIcon = styled.span`
   display: inline-block;
@@ -74,12 +78,19 @@ interface Rect {
   height: number;
 }
 
-type HeaderProps = PropsWithChildren<{
+interface HeaderProps {
+  window: string;
+  isActive: boolean;
   rect: Rect | undefined;
   onRectChange: (rect: Rect | undefined) => void;
-}>;
+}
 
-function Header({ rect, onRectChange, children }: HeaderProps): ReactNode {
+function Header({
+  window,
+  isActive,
+  rect,
+  onRectChange,
+}: HeaderProps): ReactNode {
   const main = useAtomValue(mainAtom);
   const [anchor, setAnchor] = useState<Rect>();
   useEffect(() => {
@@ -114,9 +125,11 @@ function Header({ rect, onRectChange, children }: HeaderProps): ReactNode {
       removeEventListener("mouseup", handleMouseUp);
     };
   }, [onRectChange, main, anchor, setAnchor]);
+  const openWindow = useSetAtom(openWindowAtom);
   const handleMouseDown = useCallback<MouseEventHandler<HTMLDivElement>>(
     (event) => {
       event.stopPropagation();
+      openWindow(window);
       if (!rect) return;
       setAnchor({
         left: rect.left - event.clientX,
@@ -125,29 +138,33 @@ function Header({ rect, onRectChange, children }: HeaderProps): ReactNode {
         height: rect.height,
       });
     },
-    [rect, setAnchor],
+    [window, openWindow, rect, setAnchor],
   );
   return (
     <WindowHeader
+      active={isActive}
       css="display: flex; flex-direction: row; align-items: center; justify-content: space-between; user-select: none; cursor: default;"
       onMouseDown={handleMouseDown}
     >
-      {children}
+      <span css="margin-right: 4px;">{window}</span>
+      <CloseButton window={window} />
     </WindowHeader>
   );
 }
 
 interface StyledWindowProps {
-  rect?: Rect;
+  $isActive: boolean;
+  $rect: Rect | undefined;
 }
 
 const StyledWindow = styled(Window)<StyledWindowProps>`
   position: absolute;
-  left: ${({ rect }) => (rect ? `${rect.left.toString()}px` : "50%")};
-  top: ${({ rect }) => (rect ? `${rect.top.toString()}px` : "50%")};
-  transform: ${({ rect }) => (rect ? "none" : "translate(-50%, -50%)")};
-  width: ${({ rect }) => (rect ? `${rect.width.toString()}px` : "auto")};
-  height: ${({ rect }) => (rect ? `${rect.height.toString()}px` : "auto")};
+  z-index: ${({ $isActive }) => ($isActive ? "1" : "0")};
+  left: ${({ $rect }) => ($rect ? `${$rect.left.toString()}px` : "50%")};
+  top: ${({ $rect }) => ($rect ? `${$rect.top.toString()}px` : "50%")};
+  transform: ${({ $rect }) => ($rect ? "none" : "translate(-50%, -50%)")};
+  width: ${({ $rect }) => ($rect ? `${$rect.width.toString()}px` : "auto")};
+  height: ${({ $rect }) => ($rect ? `${$rect.height.toString()}px` : "auto")};
   max-width: 100%;
   max-height: 100%;
 `;
@@ -175,12 +192,15 @@ export function DefaultWindow({
       height: rect.height,
     });
   }, [element, setRect]);
+  const isActive = useAtomValue(isActiveWindowAtomFamily(window));
   return (
-    <StyledWindow ref={ref} rect={rect}>
-      <Header rect={rect} onRectChange={setRect}>
-        <span css="margin-right: 4px;">{window}</span>
-        <CloseButton window={window} />
-      </Header>
+    <StyledWindow ref={ref} $isActive={isActive} $rect={rect}>
+      <Header
+        window={window}
+        isActive={isActive}
+        rect={rect}
+        onRectChange={setRect}
+      />
       <WindowContent>{children}</WindowContent>
     </StyledWindow>
   );
