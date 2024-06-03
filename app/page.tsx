@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { AppBar, Toolbar } from "react95";
 
 import { Clock } from "./clock";
+import { Main } from "./main";
 import { StartButton } from "./start-button";
 import { WindowButons } from "./window-buttons";
 import { Windows } from "./windows";
@@ -21,9 +22,9 @@ export default function Page(): ReactNode {
           <Clock />
         </Toolbar>
       </AppBar>
-      <main css="position: relative; width: 100%; height: calc(100% - 48px);">
+      <Main>
         <Windows />
-      </main>
+      </Main>
     </>
   );
 }

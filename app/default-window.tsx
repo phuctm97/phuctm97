@@ -1,11 +1,13 @@
-import type { PropsWithChildren, ReactNode } from "react";
+import type { MouseEventHandler, PropsWithChildren, ReactNode } from "react";
 
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import { useSetAtom } from "jotai";
-import { useCallback } from "react";
+import { useAtomValue, useSetAtom } from "jotai";
+import { useCallback, useEffect, useState } from "react";
 import { Button, Window, WindowContent, WindowHeader } from "react95";
 import { styled } from "styled-components";
 
+import { mainAtom } from "./main";
+import { useNullableState } from "./use-nullable-state";
 import { closeWindowAtom } from "./window";
 
 const CloseIcon = styled.span`
@@ -44,16 +46,111 @@ interface CloseButtonProps {
 
 function CloseButton({ window }: CloseButtonProps): ReactNode {
   const closeWindow = useSetAtom(closeWindowAtom);
-  const handleClick = useCallback(() => {
-    closeWindow(window);
-  }, [window, closeWindow]);
+  const handleClick = useCallback<MouseEventHandler<HTMLButtonElement>>(
+    (event) => {
+      event.stopPropagation();
+      closeWindow(window);
+    },
+    [window, closeWindow],
+  );
+  const handleMouseDown = useCallback<MouseEventHandler<HTMLButtonElement>>(
+    (event) => {
+      event.stopPropagation();
+    },
+    [],
+  );
   return (
-    <Button onClick={handleClick}>
+    <Button onClick={handleClick} onMouseDown={handleMouseDown}>
       <CloseIcon />
       <VisuallyHidden>Close</VisuallyHidden>
     </Button>
   );
 }
+
+interface Rect {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+}
+
+type HeaderProps = PropsWithChildren<{
+  rect: Rect | undefined;
+  onRectChange: (rect: Rect | undefined) => void;
+}>;
+
+function Header({ rect, onRectChange, children }: HeaderProps): ReactNode {
+  const main = useAtomValue(mainAtom);
+  const [anchor, setAnchor] = useState<Rect>();
+  useEffect(() => {
+    if (!main || !anchor) return;
+    const setEvent = (event: MouseEvent): void => {
+      onRectChange({
+        left: Math.min(
+          Math.max(anchor.left + event.clientX, 0),
+          main.clientWidth - anchor.width,
+        ),
+        top: Math.min(
+          Math.max(anchor.top + event.clientY, 0),
+          main.clientHeight - anchor.height,
+        ),
+        width: anchor.width,
+        height: anchor.height,
+      });
+    };
+    const handleMouseMove = (event: MouseEvent): void => {
+      setEvent(event);
+      document.documentElement.dataset.dragVisible = "";
+    };
+    const handleMouseUp = (event: MouseEvent): void => {
+      setAnchor(undefined);
+      setEvent(event);
+      delete document.documentElement.dataset.dragVisible;
+    };
+    addEventListener("mousemove", handleMouseMove);
+    addEventListener("mouseup", handleMouseUp);
+    return () => {
+      removeEventListener("mousemove", handleMouseMove);
+      removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [onRectChange, main, anchor, setAnchor]);
+  const handleMouseDown = useCallback<MouseEventHandler<HTMLDivElement>>(
+    (event) => {
+      event.stopPropagation();
+      if (!rect) return;
+      setAnchor({
+        left: rect.left - event.clientX,
+        top: rect.top - event.clientY,
+        width: rect.width,
+        height: rect.height,
+      });
+    },
+    [rect, setAnchor],
+  );
+  return (
+    <WindowHeader
+      css="display: flex; flex-direction: row; align-items: center; justify-content: space-between; user-select: none; cursor: default;"
+      onMouseDown={handleMouseDown}
+    >
+      {children}
+    </WindowHeader>
+  );
+}
+
+interface StyledWindowProps {
+  rect?: Rect;
+}
+
+const StyledWindow = styled(Window)<StyledWindowProps>`
+  position: absolute;
+  left: ${({ rect }) => (rect ? `${rect.left.toString()}px` : "50%")};
+  top: ${({ rect }) => (rect ? `${rect.top.toString()}px` : "50%")};
+  transform: ${({ rect }) => (rect ? "none" : "translate(-50%, -50%)")};
+  width: ${({ rect }) => (rect ? `${rect.width.toString()}px` : "auto")};
+  height: ${({ rect }) => (rect ? `${rect.height.toString()}px` : "auto")};
+  max-width: 100%;
+  max-height: 100%;
+`;
 
 export type DefaultWindowProps = PropsWithChildren<{
   window: string;
@@ -63,13 +160,28 @@ export function DefaultWindow({
   window,
   children,
 }: DefaultWindowProps): ReactNode {
+  const [element, ref] = useNullableState<HTMLElement>();
+  const [rect, setRect] = useState<Rect>();
+  useEffect(() => {
+    if (!element) {
+      setRect(undefined);
+      return;
+    }
+    const rect = element.getBoundingClientRect();
+    setRect({
+      left: rect.left,
+      top: rect.top,
+      width: rect.width,
+      height: rect.height,
+    });
+  }, [element, setRect]);
   return (
-    <Window css="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); max-width: 900px; max-height: 600px;">
-      <WindowHeader css="display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
+    <StyledWindow ref={ref} rect={rect}>
+      <Header rect={rect} onRectChange={setRect}>
         <span css="margin-right: 4px;">{window}</span>
         <CloseButton window={window} />
-      </WindowHeader>
+      </Header>
       <WindowContent>{children}</WindowContent>
-    </Window>
+    </StyledWindow>
   );
 }

@@ -32,6 +32,10 @@ const GlobalStyle = createGlobalStyle`
     color: ${({ theme }) => theme.materialText};
     background-color: ${({ theme }) => theme.desktopBackground};
   }
+  html[data-drag-visible] * {
+    user-select: none !important;
+    cursor: default !important;
+  }
 `;
 
 function createServerStyleSheet(): ServerStyleSheet | undefined {

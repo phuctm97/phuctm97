@@ -35,7 +35,7 @@ export function Clock(): ReactNode {
     >
       <Frame
         variant="status"
-        css="width: 84px; height: 36px; display: flex; flex-direction: row; align-items: center; justify-content: center;"
+        css="width: 84px; height: 36px; display: flex; flex-direction: row; align-items: center; justify-content: center; user-select: none; cursor: default;"
       >
         {date?.toLocaleTimeString(i18n.locale, {
           hour: "numeric",
