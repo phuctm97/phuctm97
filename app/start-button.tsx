@@ -51,7 +51,10 @@ export function StartButton(): ReactNode {
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
-        <Button active={isOpen} css="font-weight: bold; margin-right: 4px;">
+        <Button
+          active={isOpen}
+          css="flex-shrink: 0; font-weight: bold; margin-right: 4px;"
+        >
           <Logo variant="32x32_4" css="margin-right: 4px;" />
           Start
         </Button>

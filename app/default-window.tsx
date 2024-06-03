@@ -1,4 +1,10 @@
-import type { MouseEventHandler, PropsWithChildren, ReactNode } from "react";
+import type {
+  Dispatch,
+  MouseEventHandler,
+  PropsWithChildren,
+  ReactNode,
+  SetStateAction,
+} from "react";
 
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { useAtomValue, useSetAtom } from "jotai";
@@ -78,11 +84,24 @@ interface Rect {
   height: number;
 }
 
+function fixRect(rect: Rect, mainRect: DOMRect): Rect {
+  const width = Math.min(rect.width, mainRect.width);
+  const height = Math.min(rect.height, mainRect.height);
+  const left = Math.min(Math.max(rect.left, 0), mainRect.width - width);
+  const top = Math.min(Math.max(rect.top, 0), mainRect.height - height);
+  return rect.width === width &&
+    rect.height === height &&
+    rect.left === left &&
+    rect.top === top
+    ? rect
+    : { left, top, width, height };
+}
+
 interface HeaderProps {
   window: string;
   isActive: boolean;
   rect: Rect | undefined;
-  onRectChange: (rect: Rect | undefined) => void;
+  onRectChange: Dispatch<SetStateAction<Rect | undefined>>;
 }
 
 function Header({
@@ -94,7 +113,19 @@ function Header({
   const main = useAtomValue(mainAtom);
   const [anchor, setAnchor] = useState<Rect>();
   useEffect(() => {
-    if (!main || !anchor) return;
+    if (!main) return;
+    if (!anchor) {
+      const handleResize = (): void => {
+        onRectChange((rect) =>
+          rect ? fixRect(rect, main.getBoundingClientRect()) : rect,
+        );
+      };
+      handleResize();
+      addEventListener("resize", handleResize);
+      return () => {
+        removeEventListener("resize", handleResize);
+      };
+    }
     const setEvent = (event: MouseEvent): void => {
       onRectChange({
         left: Math.min(
@@ -143,7 +174,7 @@ function Header({
   return (
     <WindowHeader
       active={isActive}
-      css="display: flex; flex-direction: row; align-items: center; justify-content: space-between; user-select: none; cursor: default;"
+      css="display: flex; align-items: center; justify-content: space-between; user-select: none; cursor: default;"
       onMouseDown={handleMouseDown}
     >
       <span css="margin-right: 4px;">{window}</span>
@@ -184,13 +215,8 @@ export function DefaultWindow({
       setRect(undefined);
       return;
     }
-    const rect = element.getBoundingClientRect();
-    setRect({
-      left: rect.left,
-      top: rect.top,
-      width: rect.width,
-      height: rect.height,
-    });
+    const { left, top, width, height } = element.getBoundingClientRect();
+    setRect({ left, top, width, height });
   }, [element, setRect]);
   const isActive = useAtomValue(isActiveWindowAtomFamily(window));
   return (

@@ -16,7 +16,7 @@ function ConnectedWindow({ window }: ConnectedWindowProps): ReactNode {
       return <WelcomeWindow />;
     }
     default: {
-      return <DefaultWindow window={window}>Empty</DefaultWindow>;
+      return <DefaultWindow window={window}>Work in progress…</DefaultWindow>;
     }
   }
 }

@@ -14,11 +14,9 @@ export default function Page(): ReactNode {
   return (
     <>
       <AppBar css="top: auto; bottom: 0;">
-        <Toolbar css="justify-content: space-between;">
-          <div css="display: flex; flex-direction: row; align-items: stretch;">
-            <StartButton />
-            <WindowButons />
-          </div>
+        <Toolbar css="display: flex;">
+          <StartButton />
+          <WindowButons />
           <Clock />
         </Toolbar>
       </AppBar>
