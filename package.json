@@ -16,6 +16,7 @@
     "@emotion/is-prop-valid": "^1.2.2",
     "@radix-ui/react-direction": "^1.0.1",
     "@radix-ui/react-dropdown-menu": "^2.0.6",
+    "@radix-ui/react-visually-hidden": "^1.0.3",
     "@react95/icons": "^2.1.1",
     "@tsconfig/next": "^2.0.3",
     "@types/node": "^20.14.0",

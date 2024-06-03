@@ -8,9 +8,12 @@ import {
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
 import { Logo } from "@react95/icons";
-import { useState } from "react";
+import { useSetAtom } from "jotai";
+import { useCallback, useState } from "react";
 import { Button, MenuList, MenuListItem } from "react95";
 import { styled } from "styled-components";
+
+import { openWindowAtom } from "./window";
 
 const StyledMenuListItem = styled(MenuListItem)`
   width: 100%;
@@ -25,12 +28,30 @@ const StyledMenuListItem = styled(MenuListItem)`
   }
 `;
 
-export function Start(): ReactNode {
+interface ConnectedMenuListItemProps {
+  window: string;
+}
+
+function ConnectedMenuListItem({
+  window,
+}: ConnectedMenuListItemProps): ReactNode {
+  const openWindow = useSetAtom(openWindowAtom);
+  const handleSelect = useCallback(() => {
+    openWindow(window);
+  }, [window, openWindow]);
+  return (
+    <DropdownMenuItem onSelect={handleSelect} asChild>
+      <StyledMenuListItem>{window}</StyledMenuListItem>
+    </DropdownMenuItem>
+  );
+}
+
+export function StartButton(): ReactNode {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
-        <Button active={isOpen} css="font-weight: bold;">
+        <Button active={isOpen} css="font-weight: bold; margin-right: 4px;">
           <Logo variant="32x32_4" css="margin-right: 4px;" />
           Start
         </Button>
@@ -38,10 +59,8 @@ export function Start(): ReactNode {
       <DropdownMenuPortal>
         <DropdownMenuContent side="top" asChild>
           <MenuList css="width: 200px;">
-            {["Welcome", "Notepad", "ChatGPT"].map((key) => (
-              <DropdownMenuItem key={key} asChild>
-                <StyledMenuListItem>{key}</StyledMenuListItem>
-              </DropdownMenuItem>
+            {["Welcome", "Notepad", "ChatGPT"].map((window) => (
+              <ConnectedMenuListItem key={window} window={window} />
             ))}
           </MenuList>
         </DropdownMenuContent>
