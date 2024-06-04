@@ -18,15 +18,9 @@ import {
   openWindowsAtom,
 } from "./window";
 
-interface StyledButtonProps {
-  $maxWidth?: number;
-}
-
-const StyledButton = styled(Button)<StyledButtonProps>`
+const StyledButton = styled(Button)`
   flex-grow: 1;
   flex-shrink: 1;
-  max-width: ${({ $maxWidth }) =>
-    $maxWidth ? `${$maxWidth.toString()}px` : "none"};
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -47,7 +41,7 @@ function WindowButton({ window, maxWidth }: WindowButtonProps): ReactNode {
   }, [window, openWindow]);
   const isActive = useAtomValue(isActiveWindowAtomFamily(window));
   return (
-    <StyledButton $maxWidth={maxWidth} active={isActive} onClick={handleClick}>
+    <StyledButton active={isActive} style={{ maxWidth }} onClick={handleClick}>
       <span css="max-width: 100%; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">
         {window}
       </span>

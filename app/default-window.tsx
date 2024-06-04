@@ -86,21 +86,8 @@ interface Anchor extends Rect {
   isResize: boolean;
 }
 
-interface StyledWindowProps {
-  $isActive: boolean;
-  $rect: Rect | undefined;
-}
-
-const StyledWindow = styled(Window)<StyledWindowProps>`
+const StyledWindow = styled(Window)`
   position: absolute;
-  z-index: ${({ $isActive }) => ($isActive ? "1" : "0")};
-  left: ${({ $rect }) => ($rect ? `${$rect.left.toString()}px` : "50%")};
-  top: ${({ $rect }) => ($rect ? `${$rect.top.toString()}px` : "50%")};
-  transform: ${({ $rect }) => ($rect ? "none" : "translate(-50%, -50%)")};
-  width: ${({ $rect }) => ($rect ? `${$rect.width.toString()}px` : "auto")};
-  height: ${({ $rect }) => ($rect ? `${$rect.height.toString()}px` : "auto")};
-  max-width: 100%;
-  max-height: 100%;
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -246,9 +233,17 @@ export function DefaultWindow({
     <StyledWindow
       ref={ref}
       resizeRef={resizeRef}
+      style={{
+        zIndex: isActive ? 1 : 0,
+        ...(rect ?? {
+          left: "50%",
+          top: "50%",
+          transform: "translate(-50%, -50%)",
+          maxWidth: "100%",
+          maxHeight: "100%",
+        }),
+      }}
       resizable
-      $isActive={isActive}
-      $rect={rect}
       onMouseDown={handleMouseDown}
     >
       <WindowHeader
