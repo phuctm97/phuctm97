@@ -105,12 +105,14 @@ function resizeRect(rect: Rect, main: HTMLElement): Rect {
 
 export type DefaultWindowProps = PropsWithChildren<{
   window: string;
+  className?: string;
   defaultWidth?: number;
   defaultHeight?: number;
 }>;
 
 export function DefaultWindow({
   window,
+  className,
   defaultWidth,
   defaultHeight,
   children,
@@ -265,7 +267,10 @@ export function DefaultWindow({
         </span>
         <CloseButton window={window} />
       </WindowHeader>
-      <WindowContent css="flex-grow: 1; flex-shrink: 1; display: flex; flex-direction: column; align-items: stretch; overflow: hidden;">
+      <WindowContent
+        className={className}
+        css="flex-grow: 1; flex-shrink: 1; display: flex; flex-direction: column; align-items: stretch; overflow: hidden;"
+      >
         {children}
       </WindowContent>
     </StyledWindow>

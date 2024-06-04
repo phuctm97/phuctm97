@@ -237,7 +237,7 @@ export function WelcomeWindow(): ReactNode {
         <StyledFrame variant="well">
           <Content tab={tab} />
         </StyledFrame>
-        <div css="flex-shrink: 0; display: flex; flex-direction: column; align-items: stretch; padding-bottom: 20px;">
+        <div css="flex-shrink: 0; display: flex; flex-direction: column; align-items: stretch;">
           <Button css="flex-shrink: 0;" onClick={handleClickAboutWebsite}>
             About this Website
           </Button>
