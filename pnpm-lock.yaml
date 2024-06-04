@@ -11,6 +11,9 @@ importers:
       '@edge-runtime/types':
         specifier: ^2.2.9
         version: 2.2.9
+      '@mlc-ai/web-llm':
+        specifier: ^0.2.41
+        version: 0.2.41
       '@radix-ui/react-direction':
         specifier: ^1.0.1
         version: 1.0.1(@types/react@18.3.3)(react@18.3.1)
@@ -406,6 +409,9 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
+
+  '@mlc-ai/web-llm@0.2.41':
+    resolution: {integrity: sha512-UPfxSlOZjOPabtTHkZ95FuXbkoU2PHXv9rhHe9sBwjbbo327MzHUrvl+mkp6KY/tsj5th8TMbEXFOO3ZiZpP1Q==}
 
   '@next/env@14.2.3':
     resolution: {integrity: sha512-W7fd7IbkfmeeY2gXrzJYDx8D2lWKbVoTIj1o1ScPHNzvp30s1AuoEFSdr39bC5sjxJaxTtq3OTCZboNp0lNWHA==}
@@ -1749,6 +1755,10 @@ packages:
   lodash@4.17.21:
     resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
 
+  loglevel@1.9.1:
+    resolution: {integrity: sha512-hP3I3kCrDIMuRwAwHltphhDM1r8i55H33GgqjXbrisuJhF4kRhW1dNuxsRklp4bXl8DSdLaNLuiL4A/LWRfxvg==}
+    engines: {node: '>= 0.6.0'}
+
   loose-envify@1.4.0:
     resolution: {integrity: sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==}
     hasBin: true
@@ -2704,6 +2714,10 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.4.15
+
+  '@mlc-ai/web-llm@0.2.41':
+    dependencies:
+      loglevel: 1.9.1
 
   '@next/env@14.2.3': {}
 
@@ -4226,6 +4240,8 @@ snapshots:
   lodash.merge@4.6.2: {}
 
   lodash@4.17.21: {}
+
+  loglevel@1.9.1: {}
 
   loose-envify@1.4.0:
     dependencies:
