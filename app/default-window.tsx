@@ -101,6 +101,9 @@ const StyledWindow = styled(Window)<StyledWindowProps>`
   height: ${({ $rect }) => ($rect ? `${$rect.height.toString()}px` : "auto")};
   max-width: 100%;
   max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
   overflow: hidden;
 `;
 
@@ -252,7 +255,7 @@ export function DefaultWindow({
     >
       <WindowHeader
         active={isActive}
-        css="display: flex; align-items: center; justify-content: space-between; user-select: none; cursor: default;"
+        css="flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; user-select: none; cursor: default;"
         onMouseDown={handleWindowHeaderMouseDown}
       >
         <span css="white-space: nowrap; text-overflow: ellipsis; overflow: hidden; margin-right: 4px;">
@@ -260,7 +263,9 @@ export function DefaultWindow({
         </span>
         <CloseButton window={window} />
       </WindowHeader>
-      <WindowContent>{children}</WindowContent>
+      <WindowContent css="flex-grow: 1; flex-shrink: 1; display: flex; flex-direction: column; align-items: stretch; overflow: hidden;">
+        {children}
+      </WindowContent>
     </StyledWindow>
   );
 }
