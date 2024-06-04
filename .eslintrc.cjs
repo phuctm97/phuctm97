@@ -103,10 +103,6 @@ module.exports = {
   },
   overrides: [
     {
-      files: ["./app/atom-with-nullable.ts", "./app/use-nullable-state.ts"],
-      rules: { "unicorn/no-null": "off" },
-    },
-    {
       files: "./lib.d.ts",
       rules: {
         "@typescript-eslint/no-empty-interface": [
@@ -123,6 +119,10 @@ module.exports = {
           { prefix: "~", allowSameFolder: false },
         ],
       },
+    },
+    {
+      files: ["./lib/atom-with-nullable.ts", "./lib/use-nullable-state.ts"],
+      rules: { "unicorn/no-null": "off" },
     },
   ],
 };

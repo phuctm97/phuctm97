@@ -1,7 +1,7 @@
 import { atom } from "jotai";
 import { atomFamily } from "jotai/utils";
 
-import { atomWithWriteOnly } from "./atom-with-write-only";
+import { atomWithWriteOnly } from "~/lib/atom-with-write-only";
 
 interface State {
   openWindows: string[];

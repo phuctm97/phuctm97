@@ -2,8 +2,8 @@ import type { PropsWithChildren, ReactNode } from "react";
 
 import { useSetAtom } from "jotai";
 
-import { atomWithNullable } from "./atom-with-nullable";
-import { readonly } from "./readonly";
+import { atomWithNullable } from "~/lib/atom-with-nullable";
+import { readonly } from "~/lib/readonly";
 
 const mainWritableAtom = atomWithNullable<HTMLElement>();
 
