@@ -82,6 +82,7 @@ module.exports = {
       "error",
       { allow: "as-needed", extensions: [".tsx"] },
     ],
+    "unicorn/no-useless-undefined": ["error", { checkArguments: false }],
     "unicorn/prevent-abbreviations": [
       "error",
       {
@@ -104,12 +105,6 @@ module.exports = {
     {
       files: ["./app/atom-with-nullable.ts", "./app/use-nullable-state.ts"],
       rules: { "unicorn/no-null": "off" },
-    },
-    {
-      files: "./app/atom-with-optional.ts",
-      rules: {
-        "unicorn/no-useless-undefined": ["error", { checkArguments: false }],
-      },
     },
     {
       files: "./lib.d.ts",
