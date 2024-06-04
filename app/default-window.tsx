@@ -102,10 +102,16 @@ function resizeRect(rect: Rect, main: HTMLElement): Rect {
   return { left, top, width, height };
 }
 
-export type DefaultWindowProps = PropsWithChildren<{ window: string }>;
+export type DefaultWindowProps = PropsWithChildren<{
+  window: string;
+  defaultWidth?: number;
+  defaultHeight?: number;
+}>;
 
 export function DefaultWindow({
   window,
+  defaultWidth,
+  defaultHeight,
   children,
 }: DefaultWindowProps): ReactNode {
   const [element, ref] = useNullableState<HTMLElement>();
@@ -239,8 +245,10 @@ export function DefaultWindow({
           left: "50%",
           top: "50%",
           transform: "translate(-50%, -50%)",
-          maxWidth: "100%",
-          maxHeight: "100%",
+          width: defaultWidth ? "100%" : "auto",
+          maxWidth: defaultWidth ?? "100%",
+          height: defaultHeight ? "100%" : "auto",
+          maxHeight: defaultHeight ?? "100%",
         }),
       }}
       resizable

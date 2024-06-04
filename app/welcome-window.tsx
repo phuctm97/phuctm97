@@ -151,16 +151,6 @@ function Content({ tab }: ContentProps): ReactNode {
             </li>
             <li css="list-style: square; margin-top: 6px;">
               <Anchor
-                href="https://jotai.org"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Jotai
-              </Anchor>
-              : State Management
-            </li>
-            <li css="list-style: square; margin-top: 6px;">
-              <Anchor
                 href="https://styled-components.com"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -177,7 +167,7 @@ function Content({ tab }: ContentProps): ReactNode {
               >
                 React95
               </Anchor>
-              : UI
+              : UI Components
             </li>
             <li css="list-style: square; margin-top: 6px;">
               <Anchor
@@ -187,7 +177,17 @@ function Content({ tab }: ContentProps): ReactNode {
               >
                 React95 Icons
               </Anchor>
-              : Icons
+              : UI Icons
+            </li>
+            <li css="list-style: square; margin-top: 6px;">
+              <Anchor
+                href="https://jotai.org"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Jotai
+              </Anchor>
+              : State Management
             </li>
             <li css="list-style: square; margin-top: 6px;">
               <Anchor
@@ -208,9 +208,8 @@ function Content({ tab }: ContentProps): ReactNode {
               , and more: Development Tools
             </li>
           </ul>
-          <p css="margin-left: 10px; margin-top: 20px;">
-            This project is for non-commercial purposes only. All rights belong
-            to their respective owners.
+          <p css="margin-left: 8px; margin-top: 20px;">
+            This project is for non-commercial purposes only.
           </p>
         </>
       );
@@ -230,7 +229,7 @@ export function WelcomeWindow(): ReactNode {
     setTab("acknowledgements");
   }, [setTab]);
   return (
-    <DefaultWindow window="Welcome">
+    <DefaultWindow window="Welcome" defaultWidth={720} defaultHeight={454}>
       <h1 css="flex-shrink: 0; font-size: 2rem; font-weight: bold;">
         Welcome to @phuctm97
       </h1>
