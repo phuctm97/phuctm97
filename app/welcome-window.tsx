@@ -1,11 +1,10 @@
 import type { ReactNode } from "react";
-import type { RuleSet } from "styled-components";
 
 import { Bulb, Faxcover140, Progman24 } from "@react95/icons";
 import { useCallback, useState } from "react";
 import { Anchor, Button, Frame, Separator } from "react95";
-import { createHatchedBackground } from "react95/dist/common";
-import { styled } from "styled-components";
+import { createHatchedBackground, createScrollbars } from "react95/dist/common";
+import styled from "styled-components";
 
 import { DefaultWindow } from "./default-window";
 
@@ -13,13 +12,14 @@ const StyledFrame = styled(Frame)`
   flex-grow: 1;
   flex-shrink: 1;
   padding: 20px;
-  overflow: auto;
   margin-right: 20px;
+  overflow: auto;
   ${({ theme }) =>
     createHatchedBackground({
       mainColor: theme.tooltip,
       secondaryColor: theme.canvas,
-    }) as RuleSet};
+    })};
+  ${createScrollbars()}
 `;
 
 function openGithub(): void {
@@ -41,7 +41,7 @@ function Content({ tab }: ContentProps): ReactNode {
     case "aboutWebsite": {
       return (
         <>
-          <h2 css="font-weight: bold; margin-right: 16px;">
+          <h2 css="font-weight: bold;">
             <Bulb
               variant="32x32_4"
               css="margin-bottom: -6px; margin-right: 4px;"
@@ -75,7 +75,7 @@ function Content({ tab }: ContentProps): ReactNode {
     case "aboutAuthor": {
       return (
         <>
-          <h2 css="font-weight: bold; margin-right: 16px;">
+          <h2 css="font-weight: bold;">
             <Progman24
               variant="32x32_4"
               css="margin-bottom: -6px; margin-right: 4px;"
@@ -113,7 +113,7 @@ function Content({ tab }: ContentProps): ReactNode {
     case "acknowledgements": {
       return (
         <>
-          <h2 css="font-weight: bold; margin-right: 16px;">
+          <h2 css="font-weight: bold;">
             <Faxcover140
               variant="32x32_4"
               css="margin-bottom: -6px; margin-right: 4px;"

@@ -4,7 +4,7 @@ import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useEffect, useState } from "react";
 import { Button, Window, WindowContent, WindowHeader } from "react95";
-import { styled } from "styled-components";
+import styled from "styled-components";
 
 import { mainAtom } from "./main";
 import { useNullableState } from "./use-nullable-state";
@@ -115,9 +115,7 @@ function resizeRect(rect: Rect, main: HTMLElement): Rect {
   return { left, top, width, height };
 }
 
-export type DefaultWindowProps = PropsWithChildren<{
-  window: string;
-}>;
+export type DefaultWindowProps = PropsWithChildren<{ window: string }>;
 
 export function DefaultWindow({
   window,

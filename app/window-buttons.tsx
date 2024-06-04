@@ -10,7 +10,7 @@ import {
 import { useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button, MenuList, MenuListItem } from "react95";
-import { styled } from "styled-components";
+import styled from "styled-components";
 
 import {
   isActiveWindowAtomFamily,

@@ -1,12 +1,7 @@
 "use client";
 
-import type {
-  ComponentPropsWithoutRef,
-  PropsWithChildren,
-  ReactNode,
-} from "react";
+import type { PropsWithChildren, ReactNode } from "react";
 
-import isPropValid from "@emotion/is-prop-valid";
 import { DirectionProvider } from "@radix-ui/react-direction";
 import { Provider as JotaiProvider } from "jotai";
 import { useServerInsertedHTML } from "next/navigation";
@@ -38,20 +33,24 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-function createServerStyleSheet(): ServerStyleSheet | undefined {
-  if (runtime === "browser") return;
+function Container({ children }: PropsWithChildren): ReactNode {
+  return (
+    <ThemeProvider theme={originalTheme}>
+      <GlobalStyle />
+      <DirectionProvider dir={i18n.dir}>
+        <JotaiProvider>{children}</JotaiProvider>
+      </DirectionProvider>
+    </ThemeProvider>
+  );
+}
+
+function createServerStyleSheet(): ServerStyleSheet {
   return new ServerStyleSheet();
 }
 
-const shouldForwardProp: ComponentPropsWithoutRef<
-  typeof StyleSheetManager
->["shouldForwardProp"] = (prop, target) =>
-  typeof target === "string" ? isPropValid(prop) : !prop.startsWith("$");
-
-export function Provider({ children }: PropsWithChildren): ReactNode {
+function ServerContainer({ children }: PropsWithChildren): ReactNode {
   const [serverStyleSheet] = useState(createServerStyleSheet);
   useServerInsertedHTML(() => {
-    if (!serverStyleSheet) return;
     try {
       return serverStyleSheet.getStyleElement();
     } finally {
@@ -59,17 +58,16 @@ export function Provider({ children }: PropsWithChildren): ReactNode {
     }
   });
   return (
-    <StyleSheetManager
-      sheet={serverStyleSheet?.instance}
-      shouldForwardProp={shouldForwardProp}
-      enableVendorPrefixes
-    >
-      <ThemeProvider theme={originalTheme}>
-        <GlobalStyle />
-        <DirectionProvider dir={i18n.dir}>
-          <JotaiProvider>{children}</JotaiProvider>
-        </DirectionProvider>
-      </ThemeProvider>
+    <StyleSheetManager sheet={serverStyleSheet.instance}>
+      <Container>{children}</Container>
     </StyleSheetManager>
+  );
+}
+
+export function Provider({ children }: PropsWithChildren): ReactNode {
+  return runtime === "browser" ? (
+    <Container>{children}</Container>
+  ) : (
+    <ServerContainer>{children}</ServerContainer>
   );
 }
