@@ -248,7 +248,7 @@ export function Welcome(): ReactNode {
   }, [setTab]);
   return (
     <Window window="Welcome" defaultWidth={720} defaultHeight={454}>
-      <h1 css="flex-shrink: 0; font-size: 2rem; font-weight: bold;">
+      <h1 css="flex-shrink: 0; font-size: 2rem; line-height: 2.625rem; font-weight: bold;">
         Welcome to @phuctm97
       </h1>
       <div css="flex-grow: 1; flex-shrink: 1; display: flex; overflow: hidden; margin-top: 10px;">

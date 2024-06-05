@@ -114,7 +114,7 @@ export function WindowButons(): ReactNode {
     const handleResize = (): void => {
       if (!ref.current) return;
       const { width } = ref.current.getBoundingClientRect();
-      const capacity = Math.floor(width / 204);
+      const capacity = Math.max(Math.floor(width / 204), 1);
       if (capacity > length) {
         setSplit(0);
         setHasMoreCapacity(true);
@@ -122,7 +122,7 @@ export function WindowButons(): ReactNode {
         setSplit(0);
         setHasMoreCapacity(false);
       } else {
-        setSplit(Math.max(capacity, 1));
+        setSplit(capacity);
         setHasMoreCapacity(undefined);
       }
     };
