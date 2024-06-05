@@ -13,7 +13,7 @@ import { useCallback, useState } from "react";
 import { Button, MenuList, MenuListItem } from "react95";
 import styled from "styled-components";
 
-import { openWindowAtom } from "./window";
+import { openWindowAtom } from "~/lib/window";
 
 const StyledMenuListItem = styled(MenuListItem)`
   width: 100%;

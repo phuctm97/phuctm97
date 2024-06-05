@@ -8,12 +8,11 @@ import styled from "styled-components";
 
 import { mainAtom } from "~/lib/main";
 import { useNullableState } from "~/lib/use-nullable-state";
-
 import {
   closeWindowAtom,
   isActiveWindowAtomFamily,
   openWindowAtom,
-} from "./window";
+} from "~/lib/window";
 
 const CloseIcon = styled.span`
   display: inline-block;
