@@ -2,9 +2,9 @@ import type { ReactNode } from "react";
 
 import { useAtomValue } from "jotai";
 
-import { ChatGPTWindow } from "~/lib/chatgpt-window";
-import { NotepadWindow } from "~/lib/notepad-window";
-import { WelcomeWindow } from "~/lib/welcome-window";
+import { ChatGPT } from "~/lib/chatgpt";
+import { Notepad } from "~/lib/notepad";
+import { Welcome } from "~/lib/welcome";
 import { openWindowsAtom, Window } from "~/lib/window";
 
 interface ConnectedWindowProps {
@@ -14,13 +14,13 @@ interface ConnectedWindowProps {
 function ConnectedWindow({ window }: ConnectedWindowProps): ReactNode {
   switch (window) {
     case "Welcome": {
-      return <WelcomeWindow />;
+      return <Welcome />;
     }
     case "Notepad": {
-      return <NotepadWindow />;
+      return <Notepad />;
     }
     case "ChatGPT": {
-      return <ChatGPTWindow />;
+      return <ChatGPT />;
     }
     default: {
       return <Window window={window}>N/A</Window>;

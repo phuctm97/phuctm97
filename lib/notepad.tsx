@@ -14,7 +14,7 @@ const StyledTextInput = styled(TextInput)`
   flex-shrink: 1;
 `;
 
-export function NotepadWindow(): ReactNode {
+export function Notepad(): ReactNode {
   return (
     <StyledWindow window="Notepad" defaultWidth={400} defaultHeight={400}>
       <StyledTextInput spellCheck={false} multiline />

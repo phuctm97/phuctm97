@@ -217,7 +217,7 @@ function Content({ tab }: ContentProps): ReactNode {
   }
 }
 
-export function WelcomeWindow(): ReactNode {
+export function Welcome(): ReactNode {
   const [tab, setTab] = useState<Tab>("aboutWebsite");
   const handleClickAboutWebsite = useCallback(() => {
     setTab("aboutWebsite");

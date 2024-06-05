@@ -287,7 +287,7 @@ function Loadable(): ReactNode {
   }
 }
 
-export function ChatGPTWindow(): ReactNode {
+export function ChatGPT(): ReactNode {
   return (
     <StyledWindow window="ChatGPT" defaultWidth={736} defaultHeight={470}>
       <Loadable />
