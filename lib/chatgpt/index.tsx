@@ -1,5 +1,4 @@
 import type {
-  ChatCompletionMessageParam,
   ChatCompletionUserMessageParam,
   MLCEngine,
 } from "@mlc-ai/web-llm";
@@ -8,20 +7,16 @@ import type { ChangeEventHandler, MouseEventHandler, ReactNode } from "react";
 import { User4 } from "@react95/icons";
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import { loadable } from "jotai/utils";
-import { useCallback } from "react";
-import {
-  Button,
-  createScrollbars,
-  GroupBox,
-  Hourglass,
-  ProgressBar,
-  TextInput,
-} from "react95";
+import { useCallback, useRef } from "react";
+import { Button, Hourglass, ProgressBar, TextInput } from "react95";
 import styled from "styled-components";
 
 import { atomWithWriteOnly } from "~/lib/atom-with-write-only";
 import { readonly } from "~/lib/readonly";
 import { Window } from "~/lib/window";
+
+import { Messages } from "./messages";
+import { messagesAtom } from "./messages-atom";
 
 const StyledWindow = styled(Window)`
   padding: 6px;
@@ -88,45 +83,6 @@ const engineWritableAtom = atom<Promise<MLCEngine>, [Progress], undefined>(
 
 const engineAtom = readonly(engineWritableAtom);
 
-const messagesAtom = atom<ChatCompletionMessageParam[]>([]);
-
-const StyledContent = styled.div`
-  flex-grow: 1;
-  flex-shrink: 1;
-  overflow: auto;
-  ${createScrollbars()}
-`;
-
-interface MessageProps {
-  message: ChatCompletionMessageParam;
-}
-
-function Message({ message }: MessageProps): ReactNode {
-  switch (message.role) {
-    case "user": {
-      return (
-        <GroupBox label="You">
-          {typeof message.content === "string" ? message.content : undefined}
-        </GroupBox>
-      );
-    }
-    case "assistant": {
-      return <GroupBox label="ChatGPT">{message.content}</GroupBox>;
-    }
-  }
-}
-
-function Content(): ReactNode {
-  const messages = useAtomValue(messagesAtom);
-  return (
-    <StyledContent>
-      {messages.map((message, index) => (
-        <Message key={index} message={message} />
-      ))}
-    </StyledContent>
-  );
-}
-
 const isGeneratingAtom = atom(false);
 
 const contentAtom = atom("");
@@ -176,6 +132,7 @@ const sendAtom = atomWithWriteOnly(async (get, set) => {
 
 function Input(): ReactNode {
   const isGenerating = useAtomValue(isGeneratingAtom);
+  const ref = useRef<HTMLTextAreaElement>(null);
   const [content, setContent] = useAtom(contentAtom);
   const handleChange = useCallback<ChangeEventHandler<HTMLTextAreaElement>>(
     (event) => {
@@ -185,7 +142,8 @@ function Input(): ReactNode {
   );
   const handleReset = useCallback(() => {
     setContent("");
-  }, [setContent]);
+    ref.current?.focus();
+  }, [setContent, ref]);
   const send = useSetAtom(sendAtom);
   const handleSend = useCallback<
     MouseEventHandler<HTMLButtonElement>
@@ -195,6 +153,7 @@ function Input(): ReactNode {
   return (
     <Inputs>
       <StyledTextInput
+        ref={ref}
         value={content}
         onChange={handleChange}
         placeholder="Message ChatGPT…"
@@ -205,7 +164,9 @@ function Input(): ReactNode {
         <Button primary disabled={isGenerating} onClick={handleSend}>
           Send
         </Button>
-        <Button onClick={handleReset}>Reset</Button>
+        <Button onClick={handleReset} disabled={!content}>
+          Reset
+        </Button>
       </Buttons>
     </Inputs>
   );
@@ -279,7 +240,7 @@ function Loadable(): ReactNode {
     case "hasData": {
       return (
         <>
-          <Content />
+          <Messages />
           <Input />
         </>
       );
