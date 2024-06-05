@@ -1,11 +1,14 @@
+import type { MLCEngine } from "@mlc-ai/web-llm";
 import type { ChangeEventHandler, ReactNode } from "react";
 
-import { MLCEngine } from "@mlc-ai/web-llm";
-import { atom, useAtomValue } from "jotai";
+import { User4 } from "@react95/icons";
+import { atom, useAtomValue, useSetAtom } from "jotai";
+import { loadable } from "jotai/utils";
 import { useCallback, useState } from "react";
 import { Button, Hourglass, ProgressBar, TextInput } from "react95";
 import styled from "styled-components";
 
+import { atomWithWriteOnly } from "~/lib/atom-with-write-only";
 import { readonly } from "~/lib/readonly";
 
 import { DefaultWindow } from "./default-window";
@@ -19,21 +22,25 @@ const StyledTextInput = styled(TextInput)`
   flex-shrink: 1;
 `;
 
-const Content = styled.div`
+const Container = styled.div`
   flex-grow: 1;
   flex-shrink: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 10px;
+  overflow: hidden;
 `;
 
-const Input = styled.div`
+const Inputs = styled.div`
+  flex-shrink: 0;
   display: flex;
   align-items: stretch;
 `;
 
 const Buttons = styled.div`
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   padding-bottom: 32px;
@@ -43,11 +50,43 @@ const Buttons = styled.div`
   }
 `;
 
-function ConnectedContent(): ReactNode {
-  return <Content>Work in progress…</Content>;
+interface Progress {
+  value: number;
+  text: string;
 }
 
-function ConnectedInput(): ReactNode {
+const progressAtom = atom<Progress | undefined>(undefined);
+
+const refreshableAtom = atom(0);
+
+const writableAtom = atom<Promise<MLCEngine>, [Progress], undefined>(
+  (get, { setSelf }) => {
+    get(refreshableAtom);
+    return import("@mlc-ai/web-llm").then(({ CreateMLCEngine }) =>
+      CreateMLCEngine("Hermes-2-Pro-Mistral-7B-q4f16_1-MLC", {
+        initProgressCallback: ({ progress, text }) => {
+          if (progress > 0)
+            setSelf({ value: Math.floor(progress * 100), text });
+        },
+      }),
+    );
+  },
+  (get, set, progress) => {
+    set(progressAtom, progress);
+  },
+);
+
+const anAtom = readonly(writableAtom);
+
+function Content(): ReactNode {
+  return (
+    <Container>
+      <p>Work in progress…</p>
+    </Container>
+  );
+}
+
+function Input(): ReactNode {
   const [value, setValue] = useState("");
   const handleChange = useCallback<ChangeEventHandler<HTMLTextAreaElement>>(
     (event) => {
@@ -59,7 +98,7 @@ function ConnectedInput(): ReactNode {
     setValue("");
   }, [setValue]);
   return (
-    <Input>
+    <Inputs>
       <StyledTextInput
         value={value}
         onChange={handleChange}
@@ -73,78 +112,85 @@ function ConnectedInput(): ReactNode {
         </Button>
         <Button onClick={handleReset}>Reset</Button>
       </Buttons>
-    </Input>
+    </Inputs>
   );
 }
 
-function Loaded(): ReactNode {
-  return (
-    <>
-      <ConnectedContent />
-      <ConnectedInput />
-    </>
-  );
-}
+const ProgressContainer = styled.div`
+  flex-grow: 1;
+  flex-shrink: 1;
+  padding: 10px;
+  overflow: hidden;
+`;
 
-const engineUnloadedAtom = atom<MLCEngine | undefined>(undefined);
-
-const engineLoadedAtom = atom<MLCEngine | undefined>(undefined);
-
-const engineProgressAtom = atom<number | undefined>(undefined);
-
-const engineWritableAtom = atom(
-  (get) => get(engineLoadedAtom),
-  (get, set) => {
-    if (get(engineUnloadedAtom)) return;
-    const engine = new MLCEngine();
-    set(engineUnloadedAtom, engine);
-    engine.setInitProgressCallback(({ progress }) => {
-      set(engineProgressAtom, progress);
-    });
-    void engine
-      .reload("Hermes-2-Pro-Mistral-7B-q4f16_1-MLC")
-      .catch((error: unknown) => {
-        console.error("Failed to load engine", error);
-        set(engineProgressAtom, undefined);
-        set(engineUnloadedAtom, undefined);
-      })
-      .then(() => {
-        set(engineLoadedAtom, engine);
-      });
-  },
-);
-
-engineWritableAtom.onMount = (set) => {
-  set();
-};
-
-const engineAtom = readonly(engineWritableAtom);
-
-function ConnectedProgress(): ReactNode {
-  const progress = useAtomValue(engineProgressAtom);
-  return typeof progress === "number" ? (
-    <ProgressBar variant="tile" value={Math.floor(progress * 100)} />
-  ) : (
-    <Hourglass />
-  );
-}
+const ProgressView = styled(ProgressBar)`
+  margin-top: 12px;
+  margin-bottom: 16px;
+`;
 
 function Loading(): ReactNode {
-  return (
-    <Content>
-      <ConnectedProgress />
-    </Content>
+  const progress = useAtomValue(progressAtom);
+  return progress ? (
+    <ProgressContainer>
+      <p>Downloading a new model…</p>
+      <ProgressView value={progress.value} hideValue />
+      <p>{progress.text}</p>
+    </ProgressContainer>
+  ) : (
+    <Container>
+      <Hourglass />
+      <p css="margin-top: 16px;">Starting…</p>
+    </Container>
   );
 }
 
+const loadableAtom = loadable(anAtom);
+
+const tryAgainAtom = atomWithWriteOnly((get, set) => {
+  set(refreshableAtom, (refreshable) => refreshable + 1);
+});
+
 function Loadable(): ReactNode {
-  const engine = useAtomValue(engineAtom);
-  return engine ? <Loaded /> : <Loading />;
+  const loadable = useAtomValue(loadableAtom);
+  const tryAgain = useSetAtom(tryAgainAtom);
+  switch (loadable.state) {
+    case "loading": {
+      return <Loading />;
+    }
+    case "hasError": {
+      return (
+        <Container>
+          <div css="display: flex; margin-bottom: 16px;">
+            <User4
+              variant="32x32_4"
+              css="flex-shrink: 0; margin-top: -6px; margin-right: 12px;"
+            />
+            <p>
+              {loadable.error
+                ? loadable.error instanceof Error
+                  ? loadable.error.message
+                  : String(loadable.error)
+                : "Sorry, an error occurred"}
+            </p>
+          </div>
+          <Button onClick={tryAgain}>Try again</Button>
+        </Container>
+      );
+    }
+    case "hasData": {
+      return (
+        <>
+          <Content />
+          <Input />
+        </>
+      );
+    }
+  }
 }
 
 export function ChatGPTWindow(): ReactNode {
   return (
-    <StyledWindow window="ChatGPT" defaultWidth={740} defaultHeight={460}>
+    <StyledWindow window="ChatGPT" defaultWidth={740} defaultHeight={480}>
       <Loadable />
     </StyledWindow>
   );
