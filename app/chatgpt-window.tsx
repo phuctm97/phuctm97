@@ -190,7 +190,7 @@ function Loadable(): ReactNode {
 
 export function ChatGPTWindow(): ReactNode {
   return (
-    <StyledWindow window="ChatGPT" defaultWidth={740} defaultHeight={480}>
+    <StyledWindow window="ChatGPT" defaultWidth={736} defaultHeight={470}>
       <Loadable />
     </StyledWindow>
   );
