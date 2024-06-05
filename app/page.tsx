@@ -4,8 +4,9 @@ import type { ReactNode } from "react";
 
 import { AppBar, Toolbar } from "react95";
 
+import { Main } from "~/lib/main";
+
 import { Clock } from "./clock";
-import { Main } from "./main";
 import { StartButton } from "./start-button";
 import { WindowButons } from "./window-buttons";
 import { Windows } from "./windows";

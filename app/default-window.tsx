@@ -6,9 +6,9 @@ import { useCallback, useEffect, useState } from "react";
 import { Button, Window, WindowContent, WindowHeader } from "react95";
 import styled from "styled-components";
 
+import { mainAtom } from "~/lib/main";
 import { useNullableState } from "~/lib/use-nullable-state";
 
-import { mainAtom } from "./main";
 import {
   closeWindowAtom,
   isActiveWindowAtomFamily,
