@@ -23,7 +23,7 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-export function Container({ children }: PropsWithChildren): ReactNode {
+export function UI({ children }: PropsWithChildren): ReactNode {
   return (
     <ThemeProvider theme={originalTheme}>
       <GlobalStyle />
