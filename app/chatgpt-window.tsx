@@ -125,7 +125,7 @@ const ProgressContainer = styled.div`
 
 const ProgressView = styled(ProgressBar)`
   margin-top: 12px;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 `;
 
 function Loading(): ReactNode {
