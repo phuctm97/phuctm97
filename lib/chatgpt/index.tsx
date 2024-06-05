@@ -17,6 +17,7 @@ import { Window } from "~/lib/window";
 
 import { Messages } from "./messages";
 import { messagesAtom } from "./messages-atom";
+import { promptMessages } from "./prompt-messages";
 
 const StyledWindow = styled(Window)`
   padding: 6px;
@@ -99,7 +100,7 @@ const sendAtom = atomWithWriteOnly(async (get, set) => {
   try {
     const engine = await get(engineAtom);
     const chunks = await engine.chat.completions.create({
-      messages: [...messages, userMessage],
+      messages: [...promptMessages, ...messages, userMessage],
       stream: true,
     });
     let assistantContent = "";
