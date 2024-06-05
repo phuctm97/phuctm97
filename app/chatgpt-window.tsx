@@ -1,11 +1,22 @@
-import type { MLCEngine } from "@mlc-ai/web-llm";
-import type { ChangeEventHandler, ReactNode } from "react";
+import type {
+  ChatCompletionMessageParam,
+  ChatCompletionUserMessageParam,
+  MLCEngine,
+} from "@mlc-ai/web-llm";
+import type { ChangeEventHandler, MouseEventHandler, ReactNode } from "react";
 
 import { User4 } from "@react95/icons";
-import { atom, useAtomValue, useSetAtom } from "jotai";
+import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import { loadable } from "jotai/utils";
-import { useCallback, useState } from "react";
-import { Button, Hourglass, ProgressBar, TextInput } from "react95";
+import { useCallback } from "react";
+import {
+  Button,
+  createScrollbars,
+  GroupBox,
+  Hourglass,
+  ProgressBar,
+  TextInput,
+} from "react95";
 import styled from "styled-components";
 
 import { atomWithWriteOnly } from "~/lib/atom-with-write-only";
@@ -57,11 +68,11 @@ interface Progress {
 
 const progressAtom = atom<Progress | undefined>(undefined);
 
-const refreshableAtom = atom(0);
+const engineRefreshableAtom = atom(0);
 
-const writableAtom = atom<Promise<MLCEngine>, [Progress], undefined>(
+const engineWritableAtom = atom<Promise<MLCEngine>, [Progress], undefined>(
   (get, { setSelf }) => {
-    get(refreshableAtom);
+    get(engineRefreshableAtom);
     return import("@mlc-ai/web-llm").then(({ CreateMLCEngine }) =>
       CreateMLCEngine("Hermes-2-Pro-Mistral-7B-q4f16_1-MLC", {
         initProgressCallback: ({ progress, text }) => {
@@ -76,38 +87,123 @@ const writableAtom = atom<Promise<MLCEngine>, [Progress], undefined>(
   },
 );
 
-const anAtom = readonly(writableAtom);
+const engineAtom = readonly(engineWritableAtom);
+
+const messagesAtom = atom<ChatCompletionMessageParam[]>([]);
+
+const StyledContent = styled.div`
+  flex-grow: 1;
+  flex-shrink: 1;
+  overflow: auto;
+  ${createScrollbars()}
+`;
+
+interface MessageProps {
+  message: ChatCompletionMessageParam;
+}
+
+function Message({ message }: MessageProps): ReactNode {
+  switch (message.role) {
+    case "user": {
+      return (
+        <GroupBox label="You">
+          {typeof message.content === "string" ? message.content : undefined}
+        </GroupBox>
+      );
+    }
+    case "assistant": {
+      return <GroupBox label="ChatGPT">{message.content}</GroupBox>;
+    }
+  }
+}
 
 function Content(): ReactNode {
+  const messages = useAtomValue(messagesAtom);
   return (
-    <Container>
-      <p>Work in progress…</p>
-    </Container>
+    <StyledContent>
+      {messages.map((message, index) => (
+        <Message key={index} message={message} />
+      ))}
+    </StyledContent>
   );
 }
 
+const isGeneratingAtom = atom(false);
+
+const contentAtom = atom("");
+
+const sendAtom = atomWithWriteOnly(async (get, set) => {
+  if (get(isGeneratingAtom)) return;
+  const content = get(contentAtom);
+  if (!content) return;
+  const messages = get(messagesAtom);
+  set(isGeneratingAtom, true);
+  set(contentAtom, "");
+  const userMessage: ChatCompletionUserMessageParam = { role: "user", content };
+  set(messagesAtom, [...messages, userMessage]);
+  try {
+    const engine = await get(engineAtom);
+    const chunks = await engine.chat.completions.create({
+      messages: [...messages, userMessage],
+      stream: true,
+    });
+    let assistantContent = "";
+    for await (const chunk of chunks) {
+      for (const choice of chunk.choices) {
+        if (choice.delta.role !== "assistant" || !choice.delta.content)
+          continue;
+        assistantContent += choice.delta.content;
+        set(messagesAtom, [
+          ...messages,
+          userMessage,
+          { role: "assistant", content: assistantContent },
+        ]);
+      }
+    }
+    assistantContent = await engine.getMessage();
+    set(messagesAtom, [
+      ...messages,
+      userMessage,
+      { role: "assistant", content: assistantContent },
+    ]);
+    set(isGeneratingAtom, false);
+  } catch (error) {
+    set(messagesAtom, messages);
+    set(contentAtom, content);
+    set(isGeneratingAtom, false);
+    throw error;
+  }
+});
+
 function Input(): ReactNode {
-  const [value, setValue] = useState("");
+  const isGenerating = useAtomValue(isGeneratingAtom);
+  const [content, setContent] = useAtom(contentAtom);
   const handleChange = useCallback<ChangeEventHandler<HTMLTextAreaElement>>(
     (event) => {
-      setValue(event.target.value);
+      setContent(event.target.value);
     },
-    [setValue],
+    [setContent],
   );
   const handleReset = useCallback(() => {
-    setValue("");
-  }, [setValue]);
+    setContent("");
+  }, [setContent]);
+  const send = useSetAtom(sendAtom);
+  const handleSend = useCallback<
+    MouseEventHandler<HTMLButtonElement>
+  >(async () => {
+    await send();
+  }, [send]);
   return (
     <Inputs>
       <StyledTextInput
-        value={value}
+        value={content}
         onChange={handleChange}
         placeholder="Message ChatGPT…"
         spellCheck={false}
         multiline
       />
       <Buttons>
-        <Button primary disabled>
+        <Button primary disabled={isGenerating} onClick={handleSend}>
           Send
         </Button>
         <Button onClick={handleReset}>Reset</Button>
@@ -148,10 +244,10 @@ function Loading(): ReactNode {
   );
 }
 
-const loadableAtom = loadable(anAtom);
+const loadableAtom = loadable(engineAtom);
 
 const tryAgainAtom = atomWithWriteOnly((get, set) => {
-  set(refreshableAtom, (refreshable) => refreshable + 1);
+  set(engineRefreshableAtom, (refreshable) => refreshable + 1);
 });
 
 function Loadable(): ReactNode {
