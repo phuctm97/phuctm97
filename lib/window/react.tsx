@@ -5,7 +5,7 @@ import { useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useEffect, useState } from "react";
 import {
   Button,
-  Window as WindowRoot,
+  Window as React95Window,
   WindowContent,
   WindowHeader,
 } from "react95";
@@ -92,7 +92,7 @@ interface Anchor extends Rect {
   isResize: boolean;
 }
 
-const StyledWindowRoot = styled(WindowRoot)`
+const StyledWindow = styled(React95Window)`
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -244,7 +244,7 @@ export function Window({
   );
   const isActive = useAtomValue(isActiveWindowAtomFamily(window));
   return (
-    <StyledWindowRoot
+    <StyledWindow
       ref={ref}
       resizeRef={resizeRef}
       style={{
@@ -278,6 +278,6 @@ export function Window({
       >
         {children}
       </WindowContent>
-    </StyledWindowRoot>
+    </StyledWindow>
   );
 }
