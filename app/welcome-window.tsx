@@ -6,7 +6,7 @@ import { Anchor, Button, Frame, Separator } from "react95";
 import { createHatchedBackground, createScrollbars } from "react95/dist/common";
 import styled from "styled-components";
 
-import { DefaultWindow } from "~/lib/window";
+import { Window } from "~/lib/window";
 
 const StyledFrame = styled(Frame)`
   flex-grow: 1;
@@ -229,7 +229,7 @@ export function WelcomeWindow(): ReactNode {
     setTab("acknowledgements");
   }, [setTab]);
   return (
-    <DefaultWindow window="Welcome" defaultWidth={720} defaultHeight={454}>
+    <Window window="Welcome" defaultWidth={720} defaultHeight={454}>
       <h1 css="flex-shrink: 0; font-size: 2rem; font-weight: bold;">
         Welcome to @phuctm97
       </h1>
@@ -262,6 +262,6 @@ export function WelcomeWindow(): ReactNode {
           </Button>
         </div>
       </div>
-    </DefaultWindow>
+    </Window>
   );
 }

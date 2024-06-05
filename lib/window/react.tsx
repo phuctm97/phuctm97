@@ -3,7 +3,12 @@ import type { MouseEventHandler, PropsWithChildren, ReactNode } from "react";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useEffect, useState } from "react";
-import { Button, Window, WindowContent, WindowHeader } from "react95";
+import {
+  Button,
+  Window as WindowRoot,
+  WindowContent,
+  WindowHeader,
+} from "react95";
 import styled from "styled-components";
 
 import { mainAtom } from "~/lib/main";
@@ -87,7 +92,7 @@ interface Anchor extends Rect {
   isResize: boolean;
 }
 
-const StyledWindow = styled(Window)`
+const StyledWindowRoot = styled(WindowRoot)`
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -103,20 +108,20 @@ function resizeRect(rect: Rect, main: HTMLElement): Rect {
   return { left, top, width, height };
 }
 
-export type DefaultWindowProps = PropsWithChildren<{
+export type WindowProps = PropsWithChildren<{
   window: string;
   className?: string;
   defaultWidth?: number;
   defaultHeight?: number;
 }>;
 
-export function DefaultWindow({
+export function Window({
   window,
   className,
   defaultWidth,
   defaultHeight,
   children,
-}: DefaultWindowProps): ReactNode {
+}: WindowProps): ReactNode {
   const [element, ref] = useNullableState<HTMLElement>();
   const [rect, setRect] = useState<Rect>();
   useEffect(() => {
@@ -239,7 +244,7 @@ export function DefaultWindow({
   );
   const isActive = useAtomValue(isActiveWindowAtomFamily(window));
   return (
-    <StyledWindow
+    <StyledWindowRoot
       ref={ref}
       resizeRef={resizeRef}
       style={{
@@ -273,6 +278,6 @@ export function DefaultWindow({
       >
         {children}
       </WindowContent>
-    </StyledWindow>
+    </StyledWindowRoot>
   );
 }

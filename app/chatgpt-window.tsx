@@ -21,9 +21,9 @@ import styled from "styled-components";
 
 import { atomWithWriteOnly } from "~/lib/atom-with-write-only";
 import { readonly } from "~/lib/readonly";
-import { DefaultWindow } from "~/lib/window";
+import { Window } from "~/lib/window";
 
-const StyledWindow = styled(DefaultWindow)`
+const StyledWindow = styled(Window)`
   padding: 6px;
 `;
 

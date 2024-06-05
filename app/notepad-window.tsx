@@ -3,9 +3,9 @@ import type { ReactNode } from "react";
 import { TextInput } from "react95";
 import styled from "styled-components";
 
-import { DefaultWindow } from "~/lib/window";
+import { Window } from "~/lib/window";
 
-const StyledWindow = styled(DefaultWindow)`
+const StyledWindow = styled(Window)`
   padding: 6px;
 `;
 
