@@ -128,6 +128,10 @@ const ProgressView = styled(ProgressBar)`
   margin-bottom: 14px;
 `;
 
+const NoProgressView = styled(Hourglass)`
+  margin-top: 12px;
+`;
+
 function Loading(): ReactNode {
   const progress = useAtomValue(progressAtom);
   return progress ? (
@@ -138,8 +142,8 @@ function Loading(): ReactNode {
     </ProgressContainer>
   ) : (
     <Container>
-      <Hourglass />
-      <p css="margin-top: 12px;">Starting…</p>
+      <p>Starting…</p>
+      <NoProgressView />
     </Container>
   );
 }
