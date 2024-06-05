@@ -1,6 +1,7 @@
 import type {
-  MouseEvent as ReactMouseEvent,
-  MouseEventHandler,
+  MouseEventHandler as ReactMouseEventHandler,
+  PointerEvent as ReactPointerEvent,
+  PointerEventHandler as ReactPointerEventHandler,
   PropsWithChildren,
   ReactNode,
 } from "react";
@@ -61,24 +62,23 @@ interface CloseButtonProps {
 
 function CloseButton({ window }: CloseButtonProps): ReactNode {
   const closeWindow = useSetAtom(closeWindowAtom);
-  const handleClick = useCallback<MouseEventHandler<HTMLButtonElement>>(
+  const handleClick = useCallback<ReactMouseEventHandler<HTMLButtonElement>>(
     (event) => {
       event.stopPropagation();
       closeWindow(window);
     },
     [window, closeWindow],
   );
-  const handleMouseDown = useCallback<MouseEventHandler<HTMLButtonElement>>(
-    (event) => {
-      event.stopPropagation();
-    },
-    [],
-  );
+  const handlePointerDown = useCallback<
+    ReactPointerEventHandler<HTMLButtonElement>
+  >((event) => {
+    event.stopPropagation();
+  }, []);
   return (
     <Button
       css="flex-shrink: 0;"
       onClick={handleClick}
-      onMouseDown={handleMouseDown}
+      onPointerDown={handlePointerDown}
     >
       <CloseIcon />
       <VisuallyHidden>Close</VisuallyHidden>
@@ -114,7 +114,7 @@ function getMaxSize(element: HTMLElement): Pick<Rect, "width" | "height"> {
     : { width: innerWidth, height: innerHeight };
 }
 
-function getDragAnchor(element: HTMLElement, event: ReactMouseEvent): Anchor {
+function getDragAnchor(element: HTMLElement, event: ReactPointerEvent): Anchor {
   const rect = element.getBoundingClientRect();
   return {
     left: rect.left - event.clientX,
@@ -125,7 +125,7 @@ function getDragAnchor(element: HTMLElement, event: ReactMouseEvent): Anchor {
   };
 }
 
-function getResizeAnchor(element: HTMLElement, event: MouseEvent): Anchor {
+function getResizeAnchor(element: HTMLElement, event: PointerEvent): Anchor {
   const rect = element.getBoundingClientRect();
   return {
     left: rect.left,
@@ -188,7 +188,7 @@ export function Window({
         removeEventListener("resize", handleResize);
       };
     }
-    const handleMouseMove = (event: MouseEvent): void => {
+    const handlePointerMove = (event: PointerEvent): void => {
       const maxSize = getMaxSize(element);
       setRect(
         anchor.isResize
@@ -218,42 +218,42 @@ export function Window({
             },
       );
     };
-    const handleMouseUp = (event: MouseEvent): void => {
+    const handlePointerUp = (event: PointerEvent): void => {
       setAnchor(undefined);
-      handleMouseMove(event);
+      handlePointerMove(event);
       setDragVisible(false);
     };
-    addEventListener("mousemove", handleMouseMove);
-    addEventListener("mouseup", handleMouseUp);
+    addEventListener("pointermove", handlePointerMove);
+    addEventListener("pointerup", handlePointerUp);
     return () => {
-      removeEventListener("mousemove", handleMouseMove);
-      removeEventListener("mouseup", handleMouseUp);
+      removeEventListener("pointermove", handlePointerMove);
+      removeEventListener("pointerup", handlePointerUp);
     };
   }, [element, anchor, setRect, setAnchor]);
   const openWindow = useSetAtom(openWindowAtom);
   const [resizeElement, resizeRef] = useNullableState<HTMLElement>();
   useEffect(() => {
     if (!element || !resizeElement) return;
-    const handleMouseDown = (event: MouseEvent): void => {
+    const handlePointerDown = (event: PointerEvent): void => {
       event.stopPropagation();
       openWindow(window);
       setDragVisible(true);
       setAnchor((anchor) => anchor ?? getResizeAnchor(element, event));
     };
-    resizeElement.addEventListener("mousedown", handleMouseDown);
+    resizeElement.addEventListener("pointerdown", handlePointerDown);
     return () => {
-      resizeElement.removeEventListener("mousedown", handleMouseDown);
+      resizeElement.removeEventListener("pointerdown", handlePointerDown);
     };
   }, [element, resizeElement, window, openWindow, setAnchor]);
-  const handleMouseDown = useCallback<MouseEventHandler<HTMLElement>>(
+  const handlePointerDown = useCallback<ReactPointerEventHandler<HTMLElement>>(
     (event) => {
       event.stopPropagation();
       openWindow(window);
     },
     [window, openWindow],
   );
-  const handleWindowHeaderMouseDown = useCallback<
-    MouseEventHandler<HTMLDivElement>
+  const handleWindowHeaderPointerDown = useCallback<
+    ReactPointerEventHandler<HTMLDivElement>
   >(
     (event) => {
       if (!element) return;
@@ -282,12 +282,12 @@ export function Window({
         }),
       }}
       resizable
-      onMouseDown={handleMouseDown}
+      onPointerDown={handlePointerDown}
     >
       <WindowHeader
         active={isActive}
         css="flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; user-select: none; cursor: default;"
-        onMouseDown={handleWindowHeaderMouseDown}
+        onPointerDown={handleWindowHeaderPointerDown}
       >
         <span css="white-space: nowrap; text-overflow: ellipsis; overflow: hidden; margin-right: 4px;">
           {window}
