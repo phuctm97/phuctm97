@@ -1,19 +1,29 @@
-import type { MouseEventHandler, PropsWithChildren, ReactNode } from "react";
+import type {
+  MouseEvent as ReactMouseEvent,
+  MouseEventHandler,
+  PropsWithChildren,
+  ReactNode,
+} from "react";
 
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useEffect, useState } from "react";
-import { Button, Window, WindowContent, WindowHeader } from "react95";
+import {
+  Button,
+  Window as React95Window,
+  WindowContent,
+  WindowHeader,
+} from "react95";
 import styled from "styled-components";
 
+import { setDragVisible } from "~/lib/set-drag-visible";
 import { useNullableState } from "~/lib/use-nullable-state";
 
-import { mainAtom } from "./main";
 import {
   closeWindowAtom,
   isActiveWindowAtomFamily,
   openWindowAtom,
-} from "./window";
+} from "./jotai";
 
 const CloseIcon = styled.span`
   display: inline-block;
@@ -87,7 +97,7 @@ interface Anchor extends Rect {
   isResize: boolean;
 }
 
-const StyledWindow = styled(Window)`
+const StyledWindow = styled(React95Window)`
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -95,28 +105,63 @@ const StyledWindow = styled(Window)`
   overflow: hidden;
 `;
 
-function resizeRect(rect: Rect, main: HTMLElement): Rect {
-  const width = Math.min(rect.width, main.clientWidth);
-  const height = Math.min(rect.height, main.clientHeight);
-  const left = Math.min(Math.max(rect.left, 0), main.clientWidth - width);
-  const top = Math.min(Math.max(rect.top, 0), main.clientHeight - height);
-  return { left, top, width, height };
+function getMaxSize(element: HTMLElement): Pick<Rect, "width" | "height"> {
+  return element.parentElement
+    ? {
+        width: element.parentElement.clientWidth,
+        height: element.parentElement.clientHeight,
+      }
+    : { width: innerWidth, height: innerHeight };
 }
 
-export type DefaultWindowProps = PropsWithChildren<{
+function getDragAnchor(element: HTMLElement, event: ReactMouseEvent): Anchor {
+  const rect = element.getBoundingClientRect();
+  return {
+    left: rect.left - event.clientX,
+    top: rect.top - event.clientY,
+    width: rect.width,
+    height: rect.height,
+    isResize: false,
+  };
+}
+
+function getResizeAnchor(element: HTMLElement, event: MouseEvent): Anchor {
+  const rect = element.getBoundingClientRect();
+  return {
+    left: rect.left,
+    top: rect.top,
+    width: rect.width - event.clientX,
+    height: rect.height - event.clientY,
+    isResize: true,
+  };
+}
+
+function resizeRect(element: HTMLElement, rect: Rect): Rect {
+  const maxSize = getMaxSize(element);
+  const width = Math.min(rect.width, maxSize.width);
+  const height = Math.min(rect.height, maxSize.height);
+  return {
+    left: Math.min(Math.max(rect.left, 0), maxSize.width - width),
+    top: Math.min(Math.max(rect.top, 0), maxSize.height - height),
+    width,
+    height,
+  };
+}
+
+export type WindowProps = PropsWithChildren<{
   window: string;
   className?: string;
   defaultWidth?: number;
   defaultHeight?: number;
 }>;
 
-export function DefaultWindow({
+export function Window({
   window,
   className,
   defaultWidth,
   defaultHeight,
   children,
-}: DefaultWindowProps): ReactNode {
+}: WindowProps): ReactNode {
   const [element, ref] = useNullableState<HTMLElement>();
   const [rect, setRect] = useState<Rect>();
   useEffect(() => {
@@ -125,42 +170,17 @@ export function DefaultWindow({
       return;
     }
     const { left, top, width, height } = element.getBoundingClientRect();
-    setRect({ left, top, width, height });
+    setRect(resizeRect(element, { left, top, width, height }));
   }, [element, setRect]);
-  const [resizeElement, resizeRef] = useNullableState<HTMLElement>();
-  const openWindow = useSetAtom(openWindowAtom);
   const [anchor, setAnchor] = useState<Anchor>();
   useEffect(() => {
-    if (!rect || !resizeElement) return;
-    const handleMouseDown = (event: MouseEvent): void => {
-      event.stopPropagation();
-      openWindow(window);
-      document.documentElement.dataset.dragVisible = "";
-      setAnchor(
-        (anchor) =>
-          anchor ?? {
-            left: rect.left,
-            top: rect.top,
-            width: rect.width - event.clientX,
-            height: rect.height - event.clientY,
-            isResize: true,
-          },
-      );
-    };
-    resizeElement.addEventListener("mousedown", handleMouseDown);
-    return () => {
-      resizeElement.removeEventListener("mousedown", handleMouseDown);
-    };
-  }, [window, rect, resizeElement, openWindow, setAnchor]);
-  const main = useAtomValue(mainAtom);
-  useEffect(() => {
-    if (!main) {
-      delete document.documentElement.dataset.dragVisible;
+    if (!element) {
+      setAnchor(undefined);
       return;
     }
     if (!anchor) {
       const handleResize = (): void => {
-        setRect((rect) => (rect ? resizeRect(rect, main) : rect));
+        setRect((rect) => (rect ? resizeRect(element, rect) : rect));
       };
       handleResize();
       addEventListener("resize", handleResize);
@@ -169,6 +189,7 @@ export function DefaultWindow({
       };
     }
     const handleMouseMove = (event: MouseEvent): void => {
+      const maxSize = getMaxSize(element);
       setRect(
         anchor.isResize
           ? {
@@ -176,21 +197,21 @@ export function DefaultWindow({
               top: anchor.top,
               width: Math.min(
                 Math.max(anchor.width + event.clientX, 100),
-                main.clientWidth - anchor.left,
+                maxSize.width - anchor.left,
               ),
               height: Math.min(
                 Math.max(anchor.height + event.clientY, 100),
-                main.clientHeight - anchor.top,
+                maxSize.height - anchor.top,
               ),
             }
           : {
               left: Math.min(
                 Math.max(anchor.left + event.clientX, 0),
-                main.clientWidth - anchor.width,
+                maxSize.width - anchor.width,
               ),
               top: Math.min(
                 Math.max(anchor.top + event.clientY, 0),
-                main.clientHeight - anchor.height,
+                maxSize.height - anchor.height,
               ),
               width: anchor.width,
               height: anchor.height,
@@ -199,8 +220,8 @@ export function DefaultWindow({
     };
     const handleMouseUp = (event: MouseEvent): void => {
       setAnchor(undefined);
-      delete document.documentElement.dataset.dragVisible;
       handleMouseMove(event);
+      setDragVisible(false);
     };
     addEventListener("mousemove", handleMouseMove);
     addEventListener("mouseup", handleMouseUp);
@@ -208,7 +229,22 @@ export function DefaultWindow({
       removeEventListener("mousemove", handleMouseMove);
       removeEventListener("mouseup", handleMouseUp);
     };
-  }, [main, anchor, setRect, setAnchor]);
+  }, [element, anchor, setRect, setAnchor]);
+  const openWindow = useSetAtom(openWindowAtom);
+  const [resizeElement, resizeRef] = useNullableState<HTMLElement>();
+  useEffect(() => {
+    if (!element || !resizeElement) return;
+    const handleMouseDown = (event: MouseEvent): void => {
+      event.stopPropagation();
+      openWindow(window);
+      setDragVisible(true);
+      setAnchor((anchor) => anchor ?? getResizeAnchor(element, event));
+    };
+    resizeElement.addEventListener("mousedown", handleMouseDown);
+    return () => {
+      resizeElement.removeEventListener("mousedown", handleMouseDown);
+    };
+  }, [element, resizeElement, window, openWindow, setAnchor]);
   const handleMouseDown = useCallback<MouseEventHandler<HTMLElement>>(
     (event) => {
       event.stopPropagation();
@@ -220,22 +256,13 @@ export function DefaultWindow({
     MouseEventHandler<HTMLDivElement>
   >(
     (event) => {
-      if (!rect) return;
+      if (!element) return;
       event.stopPropagation();
       openWindow(window);
-      document.documentElement.dataset.dragVisible = "";
-      setAnchor(
-        (anchor) =>
-          anchor ?? {
-            left: rect.left - event.clientX,
-            top: rect.top - event.clientY,
-            width: rect.width,
-            height: rect.height,
-            isResize: false,
-          },
-      );
+      setDragVisible(true);
+      setAnchor((anchor) => anchor ?? getDragAnchor(element, event));
     },
-    [window, rect, openWindow, setAnchor],
+    [element, window, openWindow, setAnchor],
   );
   const isActive = useAtomValue(isActiveWindowAtomFamily(window));
   return (

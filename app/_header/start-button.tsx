@@ -13,7 +13,7 @@ import { useCallback, useState } from "react";
 import { Button, MenuList, MenuListItem } from "react95";
 import styled from "styled-components";
 
-import { openWindowAtom } from "./window";
+import { openWindowAtom } from "~/lib/window";
 
 const StyledMenuListItem = styled(MenuListItem)`
   width: 100%;
@@ -62,7 +62,7 @@ export function StartButton(): ReactNode {
       <DropdownMenuPortal>
         <DropdownMenuContent side="top" asChild>
           <MenuList css="width: 200px;">
-            {["Welcome", "Notepad", "ChatGPT"].map((window) => (
+            {["Welcome", "ChatGPT", "Notepad"].map((window) => (
               <ConnectedMenuListItem key={window} window={window} />
             ))}
           </MenuList>

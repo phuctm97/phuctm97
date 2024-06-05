@@ -16,7 +16,7 @@ import {
   isActiveWindowAtomFamily,
   openWindowAtom,
   openWindowsAtom,
-} from "./window";
+} from "~/lib/window";
 
 const StyledButton = styled(Button)`
   flex-grow: 1;

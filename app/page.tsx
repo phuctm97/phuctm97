@@ -2,26 +2,62 @@
 
 import type { ReactNode } from "react";
 
-import { AppBar, Toolbar } from "react95";
+import { useAtomValue } from "jotai";
+import styled from "styled-components";
 
-import { Clock } from "./clock";
-import { Main } from "./main";
-import { StartButton } from "./start-button";
-import { WindowButons } from "./window-buttons";
-import { Windows } from "./windows";
+import { ChatGPT } from "~/lib/chatgpt";
+import { Notepad } from "~/lib/notepad";
+import { Welcome } from "~/lib/welcome";
+import { openWindowsAtom, Window } from "~/lib/window";
+
+import { Header } from "./_header";
+
+interface OpenWindowProps {
+  window: string;
+}
+
+function OpenWindow({ window }: OpenWindowProps): ReactNode {
+  switch (window) {
+    case "Welcome": {
+      return <Welcome />;
+    }
+    case "Notepad": {
+      return <Notepad />;
+    }
+    case "ChatGPT": {
+      return <ChatGPT />;
+    }
+    default: {
+      return <Window window={window} />;
+    }
+  }
+}
+
+function OpenWindows(): ReactNode {
+  const openWindows = useAtomValue(openWindowsAtom);
+  return (
+    <>
+      {openWindows.map((openWindow) => (
+        <OpenWindow key={openWindow} window={openWindow} />
+      ))}
+    </>
+  );
+}
+
+const Main = styled.main`
+  position: relative;
+  z-index: 0;
+  width: 100%;
+  height: calc(100% - 48px);
+  overflow: hidden;
+`;
 
 export default function Page(): ReactNode {
   return (
     <>
-      <AppBar css="top: auto; bottom: 0;">
-        <Toolbar css="display: flex;">
-          <StartButton />
-          <WindowButons />
-          <Clock />
-        </Toolbar>
-      </AppBar>
+      <Header />
       <Main>
-        <Windows />
+        <OpenWindows />
       </Main>
     </>
   );

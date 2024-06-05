@@ -6,7 +6,7 @@ import { Anchor, Button, Frame, Separator } from "react95";
 import { createHatchedBackground, createScrollbars } from "react95/dist/common";
 import styled from "styled-components";
 
-import { DefaultWindow } from "./default-window";
+import { Window } from "~/lib/window";
 
 const StyledFrame = styled(Frame)`
   flex-grow: 1;
@@ -23,7 +23,7 @@ const StyledFrame = styled(Frame)`
 `;
 
 function openGithub(): void {
-  open("https://github.com/phuctm97", "_blank", "noopener noreferrer");
+  open("https://github.com/phuctm97/phuctm97", "_blank", "noopener noreferrer");
 }
 
 function openXOrTwitter(): void {
@@ -50,15 +50,19 @@ function Content({ tab }: ContentProps): ReactNode {
           </h2>
           <ul css="margin-left: 40px; margin-top: 20px;">
             <li css="list-style: square;">
-              It brings the look and feel of Windows 95 to the web.
+              It is designed to bring retro aesthetics (Windows 95) and
+              futuristic technologies (ChatGPT) together.
             </li>
             <li css="list-style: square; margin-top: 6px;">
-              It is responsive and works everywhere. Try it on your phone,
-              tablet, laptop, PC, TV, or even refrigerator!
+              It is built for the modern web: 100% in-browser, no installation,
+              no expensive API calls, no privacy concerns.
             </li>
             <li css="list-style: square; margin-top: 6px;">
-              It is 100% open-source. Check out the repository, create a fork,
-              submit a PR, report an issue, or just star on{" "}
+              Because everything runs in a browser, it is secure by default,
+              accessible to everyone, and works on many devices.
+            </li>
+            <li css="list-style: square; margin-top: 6px;">
+              For extra transparency, its source code is available on{" "}
               <Anchor
                 href="https://github.com/phuctm97/phuctm97"
                 target="_blank"
@@ -66,7 +70,7 @@ function Content({ tab }: ContentProps): ReactNode {
               >
                 GitHub
               </Anchor>
-              !
+              . A star would be very much appreciated!
             </li>
           </ul>
         </>
@@ -161,6 +165,16 @@ function Content({ tab }: ContentProps): ReactNode {
             </li>
             <li css="list-style: square; margin-top: 6px;">
               <Anchor
+                href="https://webllm.mlc.ai"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                WebLLM
+              </Anchor>
+              : In-Browser LLM
+            </li>
+            <li css="list-style: square; margin-top: 6px;">
+              <Anchor
                 href="https://react95.io"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -209,7 +223,11 @@ function Content({ tab }: ContentProps): ReactNode {
             </li>
           </ul>
           <p css="margin-left: 8px; margin-top: 20px;">
-            This project is for non-commercial purposes only.
+            This project is for non-commercial purposes only. All trademarks are
+            used for recreational purposes only and have no affiliation with the
+            respective owners. Windows and all associated assets are the
+            property of Microsoft Corporation. ChatGPT and all associated assets
+            are the property of OpenAI.
           </p>
         </>
       );
@@ -217,7 +235,7 @@ function Content({ tab }: ContentProps): ReactNode {
   }
 }
 
-export function WelcomeWindow(): ReactNode {
+export function Welcome(): ReactNode {
   const [tab, setTab] = useState<Tab>("aboutWebsite");
   const handleClickAboutWebsite = useCallback(() => {
     setTab("aboutWebsite");
@@ -229,7 +247,7 @@ export function WelcomeWindow(): ReactNode {
     setTab("acknowledgements");
   }, [setTab]);
   return (
-    <DefaultWindow window="Welcome" defaultWidth={720} defaultHeight={454}>
+    <Window window="Welcome" defaultWidth={720} defaultHeight={454}>
       <h1 css="flex-shrink: 0; font-size: 2rem; font-weight: bold;">
         Welcome to @phuctm97
       </h1>
@@ -262,6 +280,6 @@ export function WelcomeWindow(): ReactNode {
           </Button>
         </div>
       </div>
-    </DefaultWindow>
+    </Window>
   );
 }
