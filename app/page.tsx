@@ -8,15 +8,15 @@ import styled from "styled-components";
 import { ChatGPT } from "~/lib/chatgpt";
 import { Notepad } from "~/lib/notepad";
 import { Welcome } from "~/lib/welcome";
-import { openWindowsAtom } from "~/lib/window";
+import { openWindowsAtom, Window } from "~/lib/window";
 
 import { Header } from "./header";
 
-interface WindowProps {
+interface OpenWindowProps {
   window: string;
 }
 
-function Window({ window }: WindowProps): ReactNode {
+function OpenWindow({ window }: OpenWindowProps): ReactNode {
   switch (window) {
     case "Welcome": {
       return <Welcome />;
@@ -27,15 +27,18 @@ function Window({ window }: WindowProps): ReactNode {
     case "ChatGPT": {
       return <ChatGPT />;
     }
+    default: {
+      return <Window window={window} />;
+    }
   }
 }
 
-function Windows(): ReactNode {
+function OpenWindows(): ReactNode {
   const openWindows = useAtomValue(openWindowsAtom);
   return (
     <>
-      {openWindows.map((window) => (
-        <Window key={window} window={window} />
+      {openWindows.map((openWindow) => (
+        <OpenWindow key={openWindow} window={openWindow} />
       ))}
     </>
   );
@@ -54,7 +57,7 @@ export default function Page(): ReactNode {
     <>
       <Header />
       <Main>
-        <Windows />
+        <OpenWindows />
       </Main>
     </>
   );
