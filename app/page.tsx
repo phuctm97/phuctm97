@@ -10,7 +10,7 @@ import { Notepad } from "~/lib/notepad";
 import { Welcome } from "~/lib/welcome";
 import { openWindowsAtom, Window } from "~/lib/window";
 
-import { Header } from "./header";
+import { Header } from "./_header";
 
 interface OpenWindowProps {
   window: string;
