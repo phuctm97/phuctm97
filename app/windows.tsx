@@ -2,10 +2,9 @@ import type { ReactNode } from "react";
 
 import { useAtomValue } from "jotai";
 
-import { openWindowsAtom } from "~/lib/window";
+import { DefaultWindow, openWindowsAtom } from "~/lib/window";
 
 import { ChatGPTWindow } from "./chatgpt-window";
-import { DefaultWindow } from "./default-window";
 import { NotepadWindow } from "./notepad-window";
 import { WelcomeWindow } from "./welcome-window";
 

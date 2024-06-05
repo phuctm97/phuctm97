@@ -6,7 +6,7 @@ import { Anchor, Button, Frame, Separator } from "react95";
 import { createHatchedBackground, createScrollbars } from "react95/dist/common";
 import styled from "styled-components";
 
-import { DefaultWindow } from "./default-window";
+import { DefaultWindow } from "~/lib/window";
 
 const StyledFrame = styled(Frame)`
   flex-grow: 1;

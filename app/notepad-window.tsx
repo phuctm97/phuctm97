@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { TextInput } from "react95";
 import styled from "styled-components";
 
-import { DefaultWindow } from "./default-window";
+import { DefaultWindow } from "~/lib/window";
 
 const StyledWindow = styled(DefaultWindow)`
   padding: 6px;
