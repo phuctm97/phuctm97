@@ -139,6 +139,7 @@ function Loading(): ReactNode {
   ) : (
     <Container>
       <Hourglass />
+      <p css="margin-top: 12px;">Starting…</p>
     </Container>
   );
 }
