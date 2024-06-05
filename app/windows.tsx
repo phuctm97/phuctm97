@@ -2,11 +2,11 @@ import type { ReactNode } from "react";
 
 import { useAtomValue } from "jotai";
 
+import { NotepadWindow } from "~/lib/notepad-window";
+import { WelcomeWindow } from "~/lib/welcome-window";
 import { openWindowsAtom, Window } from "~/lib/window";
 
 import { ChatGPTWindow } from "./chatgpt-window";
-import { NotepadWindow } from "./notepad-window";
-import { WelcomeWindow } from "./welcome-window";
 
 interface ConnectedWindowProps {
   window: string;
@@ -24,7 +24,7 @@ function ConnectedWindow({ window }: ConnectedWindowProps): ReactNode {
       return <ChatGPTWindow />;
     }
     default: {
-      return <Window window={window}>Work in progress…</Window>;
+      return <Window window={window}>N/A</Window>;
     }
   }
 }
