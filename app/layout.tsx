@@ -4,7 +4,7 @@ import localFont from "next/font/local";
 
 import { i18n } from "~/i18n";
 
-import { Provider } from "./provider";
+import { Provider } from "./_provider";
 
 const font = localFont({
   src: [
