@@ -12,19 +12,19 @@ const StyledTextInput = styled(TextInput)`
   flex-shrink: 1;
 `;
 
-const valueAtom = atom("");
+export const notepadAtom = atom("");
 
 function Input(): ReactNode {
-  const [value, setValue] = useAtom(valueAtom);
+  const [notepad, setNotepad] = useAtom(notepadAtom);
   const handleChange = useCallback<ChangeEventHandler<HTMLTextAreaElement>>(
     (event) => {
-      setValue(event.target.value);
+      setNotepad(event.target.value);
     },
-    [setValue],
+    [setNotepad],
   );
   return (
     <StyledTextInput
-      value={value}
+      value={notepad}
       onChange={handleChange}
       placeholder="Write something…"
       spellCheck={false}

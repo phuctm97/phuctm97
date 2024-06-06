@@ -75,7 +75,7 @@ const engineWritableAtom = atom<Promise<MLCEngine>, [Progress], undefined>(
   (get, { setSelf }) => {
     get(engineRefreshableAtom);
     return import("@mlc-ai/web-llm").then(({ CreateMLCEngine }) =>
-      CreateMLCEngine("Hermes-2-Pro-Llama-3-8B-q4f16_1-MLC", {
+      CreateMLCEngine("Hermes-2-Pro-Mistral-7B-q4f16_1-MLC", {
         initProgressCallback: ({ progress, text }) => {
           if (progress > 0)
             setSelf({ value: Math.floor(progress * 100), text });
