@@ -2,7 +2,12 @@ import type {
   ChatCompletionUserMessageParam,
   MLCEngine,
 } from "@mlc-ai/web-llm";
-import type { ChangeEventHandler, MouseEventHandler, ReactNode } from "react";
+import type {
+  ChangeEventHandler,
+  KeyboardEventHandler,
+  MouseEventHandler,
+  ReactNode,
+} from "react";
 
 import { User4 } from "@react95/icons";
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
@@ -87,7 +92,7 @@ const engineAtom = readonly(engineWritableAtom);
 
 const contentAtom = atom("");
 
-const sendAtom = atomWithWriteOnly(async (get, set) => {
+const submitAtom = atomWithWriteOnly(async (get, set) => {
   if (get(isGeneratingAtom)) return;
   const content = get(contentAtom);
   if (!content) return;
@@ -144,18 +149,32 @@ function Input(): ReactNode {
     setContent("");
     ref.current?.focus();
   }, [setContent, ref]);
-  const send = useSetAtom(sendAtom);
+  const submit = useSetAtom(submitAtom);
   const handleSend = useCallback<
     MouseEventHandler<HTMLButtonElement>
   >(async () => {
-    await send();
-  }, [send]);
+    await submit();
+  }, [submit]);
+  const handleKeyDown = useCallback<KeyboardEventHandler<HTMLTextAreaElement>>(
+    async (event) => {
+      if (
+        !event.nativeEvent.isComposing &&
+        (event.metaKey || event.ctrlKey) &&
+        event.key === "Enter"
+      ) {
+        event.preventDefault();
+        await submit();
+      }
+    },
+    [submit],
+  );
   return (
     <Inputs>
       <StyledTextInput
         ref={ref}
         value={content}
         onChange={handleChange}
+        onKeyDown={handleKeyDown}
         placeholder="Message ChatGPT…"
         spellCheck={false}
         multiline

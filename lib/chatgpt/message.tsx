@@ -23,6 +23,16 @@ const components: MarkdownProps["components"] = {
 };
 
 const StyledMarkdown = styled(Markdown)`
+  ol,
+  ul {
+    padding-left: 16px;
+  }
+  ol li {
+    list-style: decimal;
+  }
+  ul li {
+    list-style: square;
+  }
   pre {
     white-space: pre-wrap;
     word-wrap: break-word;

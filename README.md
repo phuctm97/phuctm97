@@ -3,7 +3,7 @@
 </a>
 <h3 align="center">Windows 95 UI 💞 ChatGPT-like AI</h3>
 <p align="center">
-  A fun portfolio that blends yesterday’s look (Windows 95) with tomorrow’s tech (in-browser ChatGPT).
+  A portfolio that blends yesterday’s look (Windows 95) with tomorrow’s tech (in-browser ChatGPT).
   <br />
   <br />
   <a href="#features"><strong>Features</strong></a> ·
@@ -23,11 +23,11 @@
 
 - **Notepad**: A simple Notepad-like text editor
 
-- **Everything runs in a browser**: it is 100% local, makes zero API calls, works offline, and requires no installation
+- **Everything runs in a browser**: It is 100% local, makes zero API calls, works offline, and requires no installation
 
-- It is responsive and mobile-friendly
+- **Responsive**: It is mobile-friendly and works on many devices
 
-- It is statically generated to be fast and SEO-friendly
+- **Performant**: It is both SEO-friendly and fast thanks to static generation for content and dynamic import for interactivity
 
 ## Tech stack
 
@@ -47,13 +47,13 @@
 
 ## Contributing
 
-If you have any ideas, feel free to open an issue and discuss it with me. If you'd like to contribute, please fork the repository and make changes as you'd like. Pull requests are warmly welcome.
+If you have any ideas, feel free to open an issue or submit a pull request. All contributions are welcome!
 
 For more details, please see the [CONTRIBUTING](CONTRIBUTING.md) file.
 
 ## License
 
-The project is free for non-commercial use and redistribution. For commercial use, please contact me.
+This project is for non-commercial purposes only. If you'd like to use it for commercial purposes, please contact me.
 
 For more details, please see the [LICENSE](LICENSE) file.
 
