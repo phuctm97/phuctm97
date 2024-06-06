@@ -53,7 +53,7 @@ For more details, please see the [CONTRIBUTING](CONTRIBUTING.md) file.
 
 ## License
 
-This project is for non-commercial purposes only. If you'd like to use it for commercial purposes, please contact me.
+This project is for non-commercial purposes only.
 
 For more details, please see the [LICENSE](LICENSE) file.
 
