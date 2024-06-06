@@ -15,6 +15,7 @@ import { atomWithWriteOnly } from "~/lib/atom-with-write-only";
 import { readonly } from "~/lib/readonly";
 import { Window } from "~/lib/window";
 
+import { isGeneratingAtom } from "./is-generating-atom";
 import { Messages } from "./messages";
 import { messagesAtom } from "./messages-atom";
 import { promptMessages } from "./prompt-messages";
@@ -83,8 +84,6 @@ const engineWritableAtom = atom<Promise<MLCEngine>, [Progress], undefined>(
 );
 
 const engineAtom = readonly(engineWritableAtom);
-
-const isGeneratingAtom = atom(false);
 
 const contentAtom = atom("");
 
