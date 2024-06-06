@@ -21,10 +21,10 @@ function ConnectedMessages(): ReactNode {
 const Container = styled.div`
   flex-grow: 1;
   flex-shrink: 1;
-  overflow: auto;
   padding-top: 8px;
   padding-bottom: 12px;
   margin-bottom: 8px;
+  overflow-x: hidden;
   overflow-y: scroll;
   & > :not(:last-child) {
     margin-bottom: 24px;

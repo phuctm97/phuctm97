@@ -8,7 +8,11 @@
   <br />
   <a href="#features"><strong>Features</strong></a> ·
   <a href="#tech-stack"><strong>Tech stack</strong></a> ·
-  <a href="#contributing"><strong>Contributing</strong></a>
+  <a href="#contributing"><strong>Contributing</strong></a> ·
+  <a href="#license"><strong>License</strong></a>
+</p>
+<p align="center">
+  <a href="https://x.com/phuctm97"><img src="https://img.shields.io/twitter/follow/phuctm97" /></a>
 </p>
 
 ## Features
@@ -43,11 +47,15 @@
 
 ## Contributing
 
-If you have any ideas, feel free to open an issue and discuss it with me. If you'd like to contribute, please fork the repository and make changes as you'd like. Pull requests are warmly welcome. For more details, please see the [CONTRIBUTING](CONTRIBUTING.md) file.
+If you have any ideas, feel free to open an issue and discuss it with me. If you'd like to contribute, please fork the repository and make changes as you'd like. Pull requests are warmly welcome.
+
+For more details, please see the [CONTRIBUTING](CONTRIBUTING.md) file.
 
 ## License
 
-The project is free for non-commercial use and redistribution. For commercial use, please contact me. For more details, please see the [LICENSE](LICENSE) file.
+The project is free for non-commercial use and redistribution. For commercial use, please contact me.
+
+For more details, please see the [LICENSE](LICENSE) file.
 
 <!-- Links -->
 

@@ -24,6 +24,8 @@ const components: MarkdownProps["components"] = {
 
 const StyledMarkdown = styled(Markdown)`
   pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
     padding: 16px;
   }
   pre > code {
