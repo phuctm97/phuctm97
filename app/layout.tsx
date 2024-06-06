@@ -18,9 +18,9 @@ const font = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Minh-Phuc Tran - A portfolio with Windows 95 UI and ChatGPT-like AI",
+  title: "A portfolio with Windows 95 UI and ChatGPT-like AI",
   description:
-    "I'm Minh-Phuc Tran, an indie hacker. I built this portfolio to bring together retro aesthetics (Windows 95) and futuristic technologies (ChatGPT).",
+    "I'm Minh-Phuc Tran, an indie hacker. I built this portfolio to blend yesterday’s look (Windows 95) with tomorrow’s tech (in-browser ChatGPT).",
   alternates: {
     canonical: process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL
       ? new URL(

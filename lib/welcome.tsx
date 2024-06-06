@@ -50,8 +50,8 @@ function Content({ tab }: ContentProps): ReactNode {
           </h2>
           <ul css="margin-left: 40px; margin-top: 20px;">
             <li css="list-style: square;">
-              It is designed to bring retro aesthetics (Windows 95) and
-              futuristic technologies (ChatGPT) together.
+              It is designed to blend yesterday’s look (Windows 95) with
+              tomorrow’s tech (in-browser ChatGPT).
             </li>
             <li css="list-style: square; margin-top: 6px;">
               It is built for the modern web: 100% in-browser, no installation,
@@ -70,7 +70,7 @@ function Content({ tab }: ContentProps): ReactNode {
               >
                 GitHub
               </Anchor>
-              . A star would be very much appreciated!
+              . A star would be very greatly appreciated!
             </li>
           </ul>
         </>
@@ -89,7 +89,7 @@ function Content({ tab }: ContentProps): ReactNode {
           <ul css="margin-left: 40px; margin-top: 20px;">
             <li css="list-style: square;">
               I&apos;m an indie hacker. I make a living by building and selling
-              my own software products.
+              independent software products.
             </li>
             <li css="list-style: square; margin-top: 6px;">
               I&apos;m a digital nomad based in Vietnam. I travel the world
