@@ -21,6 +21,13 @@ const GlobalStyle = createGlobalStyle`
     user-select: none !important;
     cursor: default !important;
   }
+  html, body, * {
+    font-family: var(--font-sans);
+  }
+  code {
+    font-family: var(--font-mono);
+    font-size: 1.25em;
+  }
 `;
 
 export function UI({ children }: PropsWithChildren): ReactNode {

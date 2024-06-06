@@ -3,22 +3,27 @@
 </a>
 <h3 align="center">Windows 95 UI 💞 ChatGPT-like AI</h3>
 <p align="center">
-    A fun portfolio that blends yesterday’s look (Windows 95) with tomorrow’s tech (in-browser ChatGPT).
+  A fun portfolio that blends yesterday’s look (Windows 95) with tomorrow’s tech (in-browser ChatGPT).
+  <br />
+  <br />
+  <a href="#features"><strong>Features</strong></a> ·
+  <a href="#tech-stack"><strong>Tech stack</strong></a> ·
+  <a href="#contributing"><strong>Contributing</strong></a>
 </p>
 
 ## Features
 
-- **Windows 95 UI**: A nostalgic look and feel of the classic Windows 95 operating system
+- **Windows 95**: A nostalgic look and feel of the classic Windows 95 operating system
 
-- **ChatGPT-like AI**: An in-browser ChatGPT-like AI, powered by [WebLLM]
+- **In-Browser AI**: A 100% in-browser ChatGPT-like AI chat interface
 
 - **Notepad**: A simple Notepad-like text editor
 
-- Everything runs in a browser: it is 100% local, makes zero API calls, works offline, and requires no installation.
+- **Everything runs in a browser**: it is 100% local, makes zero API calls, works offline, and requires no installation
 
-- It is responsive and mobile-friendly.
+- It is responsive and mobile-friendly
 
-- It is statically generated to be fast and SEO-friendly.
+- It is statically generated to be fast and SEO-friendly
 
 ## Tech stack
 
@@ -35,6 +40,14 @@
 - [React95 Icons]: UI Icons
 
 - [Jotai]: State Management
+
+## Contributing
+
+If you have any ideas, feel free to open an issue and discuss it with me. If you'd like to contribute, please fork the repository and make changes as you'd like. Pull requests are warmly welcome. For more details, please see the [CONTRIBUTING](CONTRIBUTING.md) file.
+
+## License
+
+The project is free for non-commercial use and redistribution. For commercial use, please contact me. For more details, please see the [LICENSE](LICENSE) file.
 
 <!-- Links -->
 

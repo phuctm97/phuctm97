@@ -28,7 +28,7 @@ function OpenWindow({ window }: OpenWindowProps): ReactNode {
       return <ChatGPT />;
     }
     default: {
-      return <Window window={window} />;
+      return <Window window={window}>N/A</Window>;
     }
   }
 }
