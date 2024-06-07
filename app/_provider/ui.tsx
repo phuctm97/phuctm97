@@ -17,16 +17,17 @@ const GlobalStyle = createGlobalStyle`
     color: ${({ theme }) => theme.materialText};
     background-color: ${({ theme }) => theme.desktopBackground};
   }
-  html[data-drag-visible] * {
-    user-select: none !important;
-    cursor: default !important;
-  }
   html, body, * {
+    color-scheme: light;
     font-family: var(--font-sans);
   }
   code {
     font-family: var(--font-mono);
     font-size: 1.25em;
+  }
+  html[data-drag-visible] * {
+    user-select: none !important;
+    cursor: default !important;
   }
 `;
 

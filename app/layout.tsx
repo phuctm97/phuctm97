@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import type { PropsWithChildren, ReactNode } from "react";
 
 import { VT323 } from "next/font/google";
@@ -38,6 +38,11 @@ export const metadata: Metadata = {
   description:
     "I'm Minh-Phuc Tran, an indie hacker. I built this portfolio to blend yesterday’s look (Windows 95) with tomorrow’s tech (in-browser ChatGPT).",
   alternates: { canonical: "/" },
+};
+
+export const viewport: Viewport = {
+  themeColor: "white",
+  colorScheme: "only light",
 };
 
 export default function Layout({ children }: PropsWithChildren): ReactNode {

@@ -70,7 +70,7 @@ function Content({ tab }: ContentProps): ReactNode {
               >
                 GitHub
               </Anchor>
-              . A star would be very greatly appreciated!
+              . A star would be greatly appreciated!
             </li>
           </ul>
         </>

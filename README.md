@@ -7,9 +7,8 @@
   <br />
   <br />
   <a href="#features"><strong>Features</strong></a> ·
-  <a href="#tech-stack"><strong>Tech stack</strong></a> ·
-  <a href="#contributing"><strong>Contributing</strong></a> ·
-  <a href="#license"><strong>License</strong></a>
+  <a href="#tech-stack"><strong>Tech Stack</strong></a> ·
+  <a href="#contributing"><strong>Contributing</strong></a>
 </p>
 <p align="center">
   <a href="https://x.com/phuctm97"><img src="https://img.shields.io/twitter/follow/phuctm97" /></a>
@@ -29,7 +28,7 @@
 
 - **Performant**: It is both SEO-friendly and fast thanks to static generation for content and dynamic import for interactivity
 
-## Tech stack
+## Tech Stack
 
 - [Next.js] & [React]: Web Framework & Library
 
@@ -47,7 +46,7 @@
 
 ## Contributing
 
-If you have any ideas, feel free to open an issue or submit a pull request. All contributions are welcome!
+If you have any ideas, feel free to open an issue or submit a pull request.
 
 For more details, please see the [CONTRIBUTING](CONTRIBUTING.md) file.
 
@@ -55,7 +54,7 @@ For more details, please see the [CONTRIBUTING](CONTRIBUTING.md) file.
 
 This project is for non-commercial purposes only.
 
-For more details, please see the [LICENSE](LICENSE) file.
+For more details, please see the [LICENSE](LICENSE.md) file.
 
 <!-- Links -->
 
