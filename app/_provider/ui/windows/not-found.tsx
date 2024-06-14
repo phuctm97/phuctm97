@@ -38,7 +38,7 @@ function OkButton(): ReactNode {
 
 export function NotFound(): ReactNode {
   return (
-    <StyledWindow window="404" defaultWidth={345} defaultHeight={200}>
+    <StyledWindow window="404" defaultWidth={360} defaultHeight={200}>
       <Message>
         <Icon variant="32x32_4" />
         <p>The page you’re looking for doesn’t exist or has been moved.</p>
