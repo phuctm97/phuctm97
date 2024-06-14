@@ -4,9 +4,8 @@ import type { PropsWithChildren, ReactNode } from "react";
 import { VT323 } from "next/font/google";
 import localFont from "next/font/local";
 
-import { i18n } from "~/i18n";
-
-import { Provider } from "./_provider";
+import { i18n } from "~/lib/i18n";
+import { Provider } from "~/lib/provider";
 
 const fontSans = localFont({
   src: [

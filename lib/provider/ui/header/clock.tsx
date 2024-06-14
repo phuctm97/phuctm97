@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { Frame, Tooltip } from "react95";
 
-import { i18n } from "~/i18n";
+import { i18n } from "~/lib/i18n";
 
 export function Clock(): ReactNode {
   const [time, setTime] = useState(0);

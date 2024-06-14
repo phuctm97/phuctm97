@@ -6,7 +6,7 @@ import { styleReset } from "react95";
 import originalTheme from "react95/dist/themes/original";
 import styled, { createGlobalStyle, ThemeProvider } from "styled-components";
 
-import { i18n } from "~/i18n";
+import { i18n } from "~/lib/i18n";
 
 import { Header } from "./header";
 import { Windows } from "./windows";
