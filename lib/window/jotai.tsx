@@ -1,5 +1,7 @@
-import { atom } from "jotai";
-import { atomFamily } from "jotai/utils";
+import type { ReactNode } from "react";
+
+import { atom, useAtomValue } from "jotai";
+import { atomFamily, useHydrateAtoms } from "jotai/utils";
 
 import { atomWithWriteOnly } from "~/lib/atom-with-write-only";
 
@@ -8,12 +10,31 @@ interface State {
   activeWindow?: string;
 }
 
-function createState(initialWindow?: string): State {
-  if (!initialWindow) return { openWindows: [] };
-  return { openWindows: [initialWindow], activeWindow: initialWindow };
+function createState(...openWindows: string[]): State {
+  return { openWindows, activeWindow: openWindows[0] };
 }
 
-const stateAtom = atom<State>(createState("Welcome"));
+const stateAtom = atom(createState());
+
+interface StateProps {
+  windows: string[];
+}
+
+function State({ windows }: StateProps): ReactNode {
+  useHydrateAtoms([[stateAtom, createState(...windows)]]);
+  return undefined;
+}
+
+const isSSRAtom = atom(true);
+
+isSSRAtom.onMount = (set) => {
+  set(false);
+};
+
+export function Windows({ windows }: StateProps): ReactNode {
+  const isSSR = useAtomValue(isSSRAtom);
+  return isSSR ? <State windows={windows} /> : undefined;
+}
 
 export const openWindowsAtom = atom((get) => get(stateAtom).openWindows);
 

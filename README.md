@@ -3,7 +3,7 @@
 </a>
 <h3 align="center">Windows 95 UI 💞 ChatGPT-like AI</h3>
 <p align="center">
-  A portfolio that blends yesterday’s look (Windows 95) with tomorrow’s tech (in-browser ChatGPT).
+  A portfolio that blends yesterday’s look (Windows 95) with tomorrow’s tech (in-browser ChatGPT)
   <br />
   <br />
   <a href="#features"><strong>Features</strong></a> ·
@@ -16,17 +16,17 @@
 
 ## Features
 
-- **Windows 95**: A nostalgic look and feel of the classic Windows 95 operating system
+- **Windows 95**: A nostalgic look and feel of Windows 95
 
-- **In-Browser AI**: A 100% in-browser ChatGPT-like AI chat interface
+- **In-Browser AI**: A 100% in-browser ChatGPT-like AI
 
 - **Notepad**: A simple Notepad-like text editor
 
-- **Everything runs in a browser**: It is 100% local, makes zero API calls, works offline, and requires no installation
+- **Private**: It is privacy-friendly and makes no network requests
 
 - **Responsive**: It is mobile-friendly and works on many devices
 
-- **Performant**: It is both SEO-friendly and fast thanks to static generation for content and dynamic import for interactivity
+- **Performant**: It is SEO-friendly and loads fast (thanks to static generation and dynamic import)
 
 ## Tech Stack
 

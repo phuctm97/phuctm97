@@ -7,24 +7,24 @@ import styled from "styled-components";
 
 import { Window } from "~/lib/window";
 
+const valueAtom = atom("");
+
 const StyledTextInput = styled(TextInput)`
   flex-grow: 1;
   flex-shrink: 1;
 `;
 
-export const notepadAtom = atom("");
-
 function Input(): ReactNode {
-  const [notepad, setNotepad] = useAtom(notepadAtom);
+  const [value, setValue] = useAtom(valueAtom);
   const handleChange = useCallback<ChangeEventHandler<HTMLTextAreaElement>>(
     (event) => {
-      setNotepad(event.target.value);
+      setValue(event.target.value);
     },
-    [setNotepad],
+    [setValue],
   );
   return (
     <StyledTextInput
-      value={notepad}
+      value={value}
       onChange={handleChange}
       placeholder="Write something…"
       spellCheck={false}
