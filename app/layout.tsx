@@ -1,28 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import type { PropsWithChildren, ReactNode } from "react";
 
-import { VT323 } from "next/font/google";
-import localFont from "next/font/local";
-
+import { fontMono } from "~/lib/font-mono";
+import { fontSans } from "~/lib/font-sans";
 import { i18n } from "~/lib/i18n";
 import { Provider } from "~/lib/provider";
-
-const fontSans = localFont({
-  src: [
-    { path: "../node_modules/react95/dist/fonts/ms_sans_serif.woff2" },
-    {
-      path: "../node_modules/react95/dist/fonts/ms_sans_serif_bold.woff2",
-      weight: "bold",
-    },
-  ],
-  variable: "--font-sans",
-});
-
-const fontMono = VT323({
-  subsets: ["latin"],
-  weight: "400",
-  variable: "--font-mono",
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL(
