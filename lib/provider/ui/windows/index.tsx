@@ -5,6 +5,7 @@ import { useAtomValue } from "jotai";
 import { openWindowsAtom } from "~/lib/window";
 
 import { ChatGPT } from "./chatgpt";
+import { Exception } from "./exception";
 import { NotFound } from "./not-found";
 import { Notepad } from "./notepad";
 import { Welcome } from "./welcome";
@@ -26,6 +27,9 @@ function Window({ window }: WindowProps): ReactNode {
     }
     case "404": {
       return <NotFound />;
+    }
+    case "5xx": {
+      return <Exception />;
     }
   }
 }

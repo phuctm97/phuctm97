@@ -19,7 +19,7 @@ declare module "jotai" {
 
 declare module "next" {
   type Runtime = "edge" | "nodejs" | "browser";
-  interface PropsWithError<T extends object = Record<string, never>> extends T {
+  interface PropsWithError<T = unknown> extends T {
     error?: Error & { digest?: string };
     reset?: () => void;
   }
