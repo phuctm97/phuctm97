@@ -5,5 +5,5 @@ import type { ReactNode } from "react";
 import { Windows } from "~/lib/window";
 
 export default function Page(): ReactNode {
-  return <Windows windows={["Welcome"]} />;
+  return <Windows windows={["P Community"]} />;
 }

@@ -1,15 +1,7 @@
-import type { Update } from "grammy/types";
-
 import { activateLicense } from "@lemonsqueezy/lemonsqueezy.js";
-import { Bot } from "grammy";
-import { NextResponse } from "next/server";
+import { Bot, webhookCallback } from "grammy";
 
-import { getCurrentURL } from "~/lib/config";
-
-const bot = new Bot(process.env.TELEGRAM_BOT_TOKEN);
-
-const secretToken = process.env.TELEGRAM_SECRET_TOKEN;
-const webhookUrl = getCurrentURL("/api/telegram").toString();
+const bot = new Bot(process.env.TELEGRAM_COMMUNITY_BOT_TOKEN);
 
 bot.command("start", async (context) => {
   await context.reply(
@@ -21,38 +13,44 @@ bot.on("message:text", async (context) => {
   const licenseKey = context.message.text.trim();
 
   try {
-    const { data } = await activateLicense(licenseKey, "Telegram Bot");
+    const response = await activateLicense(licenseKey, "Telegram Bot");
 
-    if (
-      data?.error?.includes(
-        "This license key has reached the activation limit.",
-      )
-    ) {
-      await context.reply("This license key used already");
-      return;
-    }
+    if (typeof response === "object" && "data" in response) {
+      const { data } = response;
 
-    if (data && data.activated) {
-      try {
-        const inviteLink = await context.api.createChatInviteLink(
-          process.env.TELEGRAM_GROUP_ID,
-          {
-            expire_date: Math.floor(Date.now() / 1000) + 3600,
-            member_limit: 1,
-          },
-        );
+      if (
+        data?.error?.includes(
+          "This license key has reached the activation limit.",
+        )
+      ) {
+        await context.reply("This license key has already been used");
+        return;
+      }
 
-        await context.reply(
-          `License key valid! Here is the invite link to our group: ${inviteLink.invite_link}`,
-        );
-      } catch (inviteError) {
-        console.error("Error creating invite link:", inviteError);
-        await context.reply(
-          "License key is valid, but there was an issue creating the invite link. Please contact support.",
-        );
+      if (data && data.activated) {
+        try {
+          const inviteLink = await context.api.createChatInviteLink(
+            process.env.TELEGRAM_COMMUNITY_GROUP_ID,
+            {
+              expire_date: Math.floor(Date.now() / 1000) + 3600,
+              member_limit: 1,
+            },
+          );
+
+          await context.reply(
+            `License key valid! Here is the invite link to our group: ${inviteLink.invite_link}`,
+          );
+        } catch (inviteError) {
+          console.error("Error creating invite link:", inviteError);
+          await context.reply(
+            "License key is valid, but there was an issue creating the invite link. Please contact support.",
+          );
+        }
+      } else {
+        await context.reply("License key is invalid. Please try again.");
       }
     } else {
-      await context.reply("License key is invalid. Please try again.");
+      throw new Error("Unexpected response format from activateLicense");
     }
   } catch (error) {
     console.error("Error activating license:", error);
@@ -62,20 +60,6 @@ bot.on("message:text", async (context) => {
   }
 });
 
-export async function POST(request: Request): Promise<Response> {
-  const update = (await request.json()) as Update;
-
-  await bot.init();
-
-  await bot.handleUpdate(update);
-
-  return NextResponse.json({ ok: true });
-}
-
-await bot.api
-  .setWebhook(webhookUrl, {
-    secret_token: secretToken,
-  })
-  .catch((error: unknown) => {
-    console.error("Error setting webhook:", error);
-  });
+export const POST = webhookCallback(bot, "std/http", {
+  secretToken: process.env.TELEGRAM_COMMUNITY_WEBHOOK_SECRET_TOKEN,
+});

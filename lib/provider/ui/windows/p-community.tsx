@@ -29,7 +29,7 @@ const ErrorMessage = styled.p`
   margin-top: 10px;
 `;
 
-export function JoinCommunity(): ReactNode {
+export function PCommunity(): ReactNode {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
 
@@ -37,9 +37,9 @@ export function JoinCommunity(): ReactNode {
     setIsLoading(true);
     setError(undefined);
     buyLicense()
-      .catch((error_: unknown) => {
+      .catch((error: unknown) => {
         setError("An error occurred. Please try again.");
-        console.error(error_);
+        console.error(error);
       })
       .finally(() => {
         setIsLoading(false);

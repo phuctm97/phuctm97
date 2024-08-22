@@ -9,13 +9,15 @@ import { redirect } from "next/navigation";
 export async function buyLicense(): Promise<never> {
   lemonSqueezySetup({ apiKey: process.env.LEMON_SQUEEZY_API_KEY });
 
+  const telegramDeepLink = `https://t.me/${process.env.TELEGRAM_COMMUNITY_BOT_ID}`;
+
   const createCheckoutResult = await createCheckout(
     process.env.LEMON_SQUEEZY_STORE_ID,
-    process.env.LEMON_SQUEEZY_ONE_TIME_VARIANT_ID,
+    process.env.LEMON_SQUEEZY_COMMUNITY_MEMBERSHIP_VARIANT_ID,
     {
       productOptions: {
-        redirectUrl: `https://t.me/${process.env.TELEGRAM_BOT_ID}`,
-        receiptLinkUrl: `https://t.me/${process.env.TELEGRAM_BOT_ID}`,
+        redirectUrl: telegramDeepLink,
+        receiptLinkUrl: telegramDeepLink,
       },
     },
   );
