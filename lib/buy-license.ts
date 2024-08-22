@@ -6,10 +6,12 @@ import {
 } from "@lemonsqueezy/lemonsqueezy.js";
 import { redirect } from "next/navigation";
 
-export async function buyLicense(): Promise<never> {
+import { encodeEmailURL } from "~/lib/encode-email-url";
+
+export async function buyLicense(email: string): Promise<never> {
   lemonSqueezySetup({ apiKey: process.env.LEMON_SQUEEZY_API_KEY });
 
-  const telegramDeepLink = `https://t.me/${process.env.TELEGRAM_COMMUNITY_BOT_ID}`;
+  const telegramDeepLink = `https://t.me/${process.env.TELEGRAM_COMMUNITY_BOT_ID}?start=${encodeEmailURL(email)}`;
 
   const createCheckoutResult = await createCheckout(
     process.env.LEMON_SQUEEZY_STORE_ID,
@@ -18,6 +20,9 @@ export async function buyLicense(): Promise<never> {
       productOptions: {
         redirectUrl: telegramDeepLink,
         receiptLinkUrl: telegramDeepLink,
+      },
+      checkoutData: {
+        email,
       },
     },
   );

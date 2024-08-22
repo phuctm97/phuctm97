@@ -1,57 +1,49 @@
-import { activateLicense } from "@lemonsqueezy/lemonsqueezy.js";
+import { lemonSqueezySetup } from "@lemonsqueezy/lemonsqueezy.js";
 import { Bot, webhookCallback } from "grammy";
 
+import { decodeEmailURL } from "~/lib/decode-email-url";
+
+import { activeLicense } from "./active-license";
+import { findInactiveLicense } from "./find-inactive-license";
+
 const bot = new Bot(process.env.TELEGRAM_COMMUNITY_BOT_TOKEN);
+lemonSqueezySetup({ apiKey: process.env.LEMON_SQUEEZY_API_KEY });
+
+function validateEmail(email: string): boolean {
+  const re = /^[\w%+.-]+@[\d.A-Za-z-]+\.[A-Za-z]{2,}$/;
+  return re.test(email);
+}
 
 bot.command("start", async (context) => {
-  await context.reply(
-    "Welcome to the P Community Bot! Please enter your license key",
-  );
+  const email = decodeEmailURL(context.match);
+
+  if (!validateEmail(email)) {
+    await context.reply(
+      "Welcome to the P Community Bot! Please enter your license key",
+    );
+    return;
+  }
+
+  try {
+    const inactiveLicense = await findInactiveLicense(email);
+    await (inactiveLicense
+      ? activeLicense(context, inactiveLicense)
+      : context.reply(
+          "Welcome to the P Community Bot! Please enter your license key",
+        ));
+  } catch (error) {
+    console.error("Error in start command:", error);
+    await context.reply(
+      "Welcome to the P Community Bot! Please enter your license key",
+    );
+  }
 });
 
 bot.on("message:text", async (context) => {
   const licenseKey = context.message.text.trim();
 
   try {
-    const response = await activateLicense(licenseKey, "Telegram Bot");
-
-    if (typeof response === "object" && "data" in response) {
-      const { data } = response;
-
-      if (
-        data?.error?.includes(
-          "This license key has reached the activation limit.",
-        )
-      ) {
-        await context.reply("This license key has already been used");
-        return;
-      }
-
-      if (data && data.activated) {
-        try {
-          const inviteLink = await context.api.createChatInviteLink(
-            process.env.TELEGRAM_COMMUNITY_GROUP_ID,
-            {
-              expire_date: Math.floor(Date.now() / 1000) + 3600,
-              member_limit: 1,
-            },
-          );
-
-          await context.reply(
-            `License key valid! Here is the invite link to our group: ${inviteLink.invite_link}`,
-          );
-        } catch (inviteError) {
-          console.error("Error creating invite link:", inviteError);
-          await context.reply(
-            "License key is valid, but there was an issue creating the invite link. Please contact support.",
-          );
-        }
-      } else {
-        await context.reply("License key is invalid. Please try again.");
-      }
-    } else {
-      throw new Error("Unexpected response format from activateLicense");
-    }
+    await activeLicense(context, licenseKey);
   } catch (error) {
     console.error("Error activating license:", error);
     await context.reply(
