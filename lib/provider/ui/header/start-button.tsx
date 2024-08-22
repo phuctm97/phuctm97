@@ -62,7 +62,7 @@ export function StartButton(): ReactNode {
       <DropdownMenuPortal>
         <DropdownMenuContent side="top" asChild>
           <MenuList css="width: 200px;">
-            {["Welcome", "ChatGPT", "Notepad"].map((window) => (
+            {["Welcome", "ChatGPT", "Notepad", "P Community"].map((window) => (
               <ConnectedMenuListItem key={window} window={window} />
             ))}
           </MenuList>
