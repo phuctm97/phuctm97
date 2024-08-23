@@ -33,8 +33,7 @@ bot.command("start", async (context) => {
   try {
     await activeLicense(context, context.match);
   } catch (error) {
-    console.error("Error in start command:", error);
-    await sendWelcomeMessage(context);
+    await context.reply((error as Error).message);
   }
 });
 
@@ -44,10 +43,7 @@ bot.on("message:text", async (context) => {
   try {
     await activeLicense(context, licenseKey);
   } catch (error) {
-    console.error("Error activating license:", error);
-    await context.reply(
-      "An error occurred while processing the license key. Please try again.",
-    );
+    await context.reply((error as Error).message);
   }
 });
 
