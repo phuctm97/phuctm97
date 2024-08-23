@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 import { useState } from "react";
-import { Button, TextInput } from "react95";
+import { Button } from "react95";
 import styled from "styled-components";
 
 import { buyLicense } from "~/lib/buy-license";
@@ -29,25 +29,13 @@ const ErrorMessage = styled.p`
   margin-top: 10px;
 `;
 
-function validateEmail(email: string): boolean {
-  const re = /^[\w%+.-]+@[\d.A-Za-z-]+\.[A-Za-z]{2,}$/;
-  return re.test(email);
-}
-
 export function PCommunity(): ReactNode {
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | undefined>(undefined);
-  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
 
   function handleJoinNow(): void {
-    if (!validateEmail(email)) {
-      setError("Please enter a valid email address.");
-      return;
-    }
-
     setIsLoading(true);
-    setError(undefined);
-    buyLicense(email)
+    buyLicense()
       .catch((error: unknown) => {
         setError("An error occurred. Please try again.");
         console.error(error);
@@ -58,25 +46,18 @@ export function PCommunity(): ReactNode {
   }
 
   return (
-    <StyledWindow window="P Community" defaultWidth={400} defaultHeight={300}>
+    <StyledWindow window="P Community" defaultWidth={400} defaultHeight={350}>
       <Title>Join P Community</Title>
       <Description>
         Connect with other developers, share your projects, and get help from
         the community.
       </Description>
-      <TextInput
-        value={email}
-        onChange={(value) => {
-          setEmail(value.target.value);
-        }}
-        placeholder="Enter your email"
-        fullWidth
-        style={{ marginBottom: "10px" }}
-      />
-      <Button
-        onClick={handleJoinNow}
-        disabled={isLoading || !validateEmail(email)}
-      >
+      <Description>
+        Please note: Our community primarily communicates in Vietnamese. We
+        recommend joining only if you speak Vietnamese.
+      </Description>
+
+      <Button onClick={handleJoinNow} disabled={isLoading}>
         {isLoading ? "Loading..." : "Join Now"}
       </Button>
       {error && <ErrorMessage>{error}</ErrorMessage>}
