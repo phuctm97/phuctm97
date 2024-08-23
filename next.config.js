@@ -2,7 +2,4 @@
 export default {
   compiler: { styledComponents: true },
   eslint: { dirs: ["."] },
-  experimental: {
-    serverComponentsExternalPackages: ["grammy"],
-  },
 };

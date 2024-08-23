@@ -1,3 +1,5 @@
+import type { Context } from "grammy";
+
 import {
   lemonSqueezySetup,
   validateLicense,
@@ -9,13 +11,22 @@ import { activeLicense } from "./active-license";
 const bot = new Bot(process.env.TELEGRAM_COMMUNITY_BOT_TOKEN);
 lemonSqueezySetup({ apiKey: process.env.LEMON_SQUEEZY_API_KEY });
 
+const sendWelcomeMessage = async (context: Context): Promise<void> => {
+  await context.reply(
+    "Welcome to the P Community Bot! Please enter your license key",
+  );
+};
+
 bot.command("start", async (context) => {
+  if (!context.match) {
+    await sendWelcomeMessage(context);
+    return;
+  }
+
   const licenseKey = await validateLicense(context.match);
 
   if (!licenseKey.data?.valid) {
-    await context.reply(
-      "Welcome to the P Community Bot! Please enter your license key",
-    );
+    await sendWelcomeMessage(context);
     return;
   }
 
@@ -23,9 +34,7 @@ bot.command("start", async (context) => {
     await activeLicense(context, context.match);
   } catch (error) {
     console.error("Error in start command:", error);
-    await context.reply(
-      "Welcome to the P Community Bot! Please enter your license key",
-    );
+    await sendWelcomeMessage(context);
   }
 });
 
