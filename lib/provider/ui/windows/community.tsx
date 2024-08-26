@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 import { useState } from "react";
-import { Anchor, Button, Hourglass, TextInput } from "react95";
+import { Anchor, Button, Hourglass } from "react95";
 import styled from "styled-components";
 
 import { buyLicense } from "~/lib/buy-license";
@@ -43,11 +43,6 @@ const ErrorMessage = styled.p`
   color: red;
 `;
 
-const EmailInput = styled(TextInput)`
-  width: 100%;
-  margin-bottom: 20px;
-`;
-
 const content = {
   vi: {
     title: "Tham gia P Community",
@@ -69,36 +64,16 @@ const content = {
   },
 };
 
-const validateEmail = (email: string): boolean => {
-  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return re.test(email);
-};
-
 export function Community(): ReactNode {
   const [isLoading, setIsLoading] = useState(false);
   const [language, setLanguage] = useState<"vi" | "en">("en");
-  const [email, setEmail] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
-  const [emailError, setEmailError] = useState("");
+  const [error, setError] = useState("");
   const data = content[language];
 
-  const handleEmailChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ): void => {
-    const newEmail = event.target.value;
-    setEmail(newEmail);
-    setEmailError("");
-  };
-
   const handleJoinNow = (): void => {
-    if (email && !validateEmail(email)) {
-      setEmailError(data.emailError);
-      return;
-    }
-    setEmailError("");
     setIsLoading(true);
-    buyLicense(email).catch((error: unknown) => {
-      setErrorMessage("An error occurred. Please try again.");
+    buyLicense().catch((error: unknown) => {
+      setError("An error occurred. Please try again.");
       console.error(error);
       setIsLoading(false);
     });
@@ -137,21 +112,14 @@ export function Community(): ReactNode {
       </TitleContainer>
       <Description>{renderDescription(data.description)}</Description>
       <Description>{data.note}</Description>
-      <EmailInput
-        placeholder={data.emailPlaceholder}
-        value={email}
-        onChange={handleEmailChange}
-        css="width: 70%;"
-      />
-      {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
-      {emailError && <ErrorMessage>{emailError}</ErrorMessage>}
+
+      {error && <ErrorMessage>{error}</ErrorMessage>}
       {isLoading ? (
         <Hourglass size={24} css="margin-top: 5px; margin-bottom: 5px;" />
       ) : (
         <Button
           css="flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin-top: 5px; margin-bottom: 5px;"
           onClick={handleJoinNow}
-          disabled={!!emailError}
         >
           {data.joinButton}
         </Button>
