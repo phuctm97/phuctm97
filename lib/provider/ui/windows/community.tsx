@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
+import type { SelectOption } from "react95/dist/Select/Select.types";
 
 import { useState } from "react";
-import { Anchor, Button, Hourglass } from "react95";
+import { Anchor, Button, Hourglass, Select } from "react95";
 import styled from "styled-components";
 
 import { buyLicense } from "~/lib/buy-license";
@@ -29,7 +30,7 @@ const Title = styled.h2`
   text-align: center;
 `;
 
-const LanguageSwitch = styled(Button)`
+const LanguageSelect = styled(Select)`
   font-size: 0.8rem;
   padding: 4px 8px;
 `;
@@ -41,6 +42,13 @@ const Description = styled.p`
 
 const ErrorMessage = styled.p`
   color: red;
+`;
+
+const Footer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
 `;
 
 const content = {
@@ -79,8 +87,8 @@ export function Community(): ReactNode {
     });
   };
 
-  const toggleLanguage = (): void => {
-    setLanguage(language === "vi" ? "en" : "vi");
+  const handleLanguageChange = (selectedOption: SelectOption<string>): void => {
+    setLanguage(selectedOption.value as "vi" | "en");
   };
 
   const renderDescription = (description: string): ReactNode => {
@@ -90,11 +98,15 @@ export function Community(): ReactNode {
         {parts[0]}
         <Anchor
           css="display: inline-block;"
-          href="https://x.com/phuctm97"
+          href={
+            language === "vi"
+              ? "https://www.facebook.com/phuctm97"
+              : "https://x.com/phuctm97"
+          }
           target="_blank"
           rel="noopener noreferrer"
         >
-          Minh-Phuc Tran
+          {language === "vi" ? "Trần Minh Phúc" : "Minh-Phuc Tran"}
         </Anchor>
         {parts[1]}
       </>
@@ -102,28 +114,32 @@ export function Community(): ReactNode {
   };
 
   return (
-    <StyledWindow window="Community" defaultWidth={450} defaultHeight={450}>
+    <StyledWindow window="Community" defaultWidth={450} defaultHeight={400}>
       <TitleContainer>
-        <div style={{ width: "35px" }} />
+        <div style={{ width: "90px" }} />
         <Title>{data.title}</Title>
-        <LanguageSwitch onClick={toggleLanguage}>
-          {language === "vi" ? "VI" : "EN"}
-        </LanguageSwitch>
+        <LanguageSelect
+          options={[
+            { value: "en", label: "EN" },
+            { value: "vi", label: "VI" },
+          ]}
+          value={language}
+          onChange={(selectedOption) => {
+            handleLanguageChange(selectedOption as SelectOption<string>);
+          }}
+        />
       </TitleContainer>
       <Description>{renderDescription(data.description)}</Description>
       <Description>{data.note}</Description>
 
       {error && <ErrorMessage>{error}</ErrorMessage>}
-      {isLoading ? (
-        <Hourglass size={24} css="margin-top: 5px; margin-bottom: 5px;" />
-      ) : (
-        <Button
-          css="flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin-top: 5px; margin-bottom: 5px;"
-          onClick={handleJoinNow}
-        >
-          {data.joinButton}
-        </Button>
-      )}
+      <Footer>
+        {isLoading ? (
+          <Hourglass size={24} />
+        ) : (
+          <Button onClick={handleJoinNow}>{data.joinButton}</Button>
+        )}
+      </Footer>
     </StyledWindow>
   );
 }
