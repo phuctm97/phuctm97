@@ -4,9 +4,11 @@ import {
   lemonSqueezySetup,
   validateLicense,
 } from "@lemonsqueezy/lemonsqueezy.js";
+import { kv } from "@vercel/kv";
 import { Bot, webhookCallback } from "grammy";
 
-import { activeLicense } from "./active-license";
+import { activeLicenseLemonsquezzy } from "./active-license-lemonsquezzy";
+import { activeLicenseSEPay } from "./active-license-sepay";
 
 const bot = new Bot(process.env.TELEGRAM_COMMUNITY_BOT_TOKEN);
 lemonSqueezySetup({ apiKey: process.env.LEMON_SQUEEZY_API_KEY });
@@ -17,24 +19,35 @@ const sendWelcomeMessage = async (context: Context): Promise<void> => {
   );
 };
 
+const handleLicense = async (
+  context: Context,
+  licenseKey: string,
+): Promise<void> => {
+  const validatedLicense = await validateLicense(licenseKey);
+
+  if (!validatedLicense.data?.valid) {
+    const licenseStatus = await kv.get(`license-${licenseKey}`);
+    if (!licenseStatus) {
+      await context.reply("License key is invalid. Please try again.");
+      return;
+    }
+    await activeLicenseSEPay(context, licenseStatus as string, licenseKey);
+    return;
+  }
+
+  try {
+    await activeLicenseLemonsquezzy(context, licenseKey);
+  } catch (error) {
+    await context.reply((error as Error).message);
+  }
+};
+
 bot.command("start", async (context) => {
   if (!context.match) {
     await sendWelcomeMessage(context);
     return;
   }
-
-  const licenseKey = await validateLicense(context.match);
-
-  if (!licenseKey.data?.valid) {
-    await sendWelcomeMessage(context);
-    return;
-  }
-
-  try {
-    await activeLicense(context, context.match);
-  } catch (error) {
-    await context.reply((error as Error).message);
-  }
+  await handleLicense(context, context.match);
 });
 
 bot.on("message:text", async (context) => {
@@ -42,14 +55,7 @@ bot.on("message:text", async (context) => {
     context.message.chat.id === Number(process.env.TELEGRAM_COMMUNITY_GROUP_ID)
   )
     return;
-
-  const licenseKey = context.message.text.trim();
-
-  try {
-    await activeLicense(context, licenseKey);
-  } catch (error) {
-    await context.reply((error as Error).message);
-  }
+  await handleLicense(context, context.message.text.trim());
 });
 
 export const POST = webhookCallback(bot, "std/http", {

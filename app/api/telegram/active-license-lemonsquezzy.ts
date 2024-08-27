@@ -2,7 +2,7 @@ import type { Context } from "grammy";
 
 import { activateLicense } from "@lemonsqueezy/lemonsqueezy.js";
 
-export async function activeLicense(
+export async function activeLicenseLemonsquezzy(
   context: Context,
   licenseKey: string,
 ): Promise<void> {
