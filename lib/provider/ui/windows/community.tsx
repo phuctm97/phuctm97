@@ -297,10 +297,10 @@ export function Community(): ReactNode {
       <ScrollableContent>
         <ButtonContainer>
           <Button disabled={isLoading} onClick={handleVNPay}>
-            VNPay
+            QR Code / Bank Transfer
           </Button>
           <Button disabled={isLoading} onClick={handleInternationalCard}>
-            International Card
+            Visa / Mastercard / Paypal
           </Button>
           <Button disabled={isLoading} onClick={handleBack}>
             {data.backButton}
