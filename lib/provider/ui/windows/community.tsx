@@ -300,7 +300,7 @@ export function Community(): ReactNode {
             QR Code / Bank Transfer
           </Button>
           <Button disabled={isLoading} onClick={handleInternationalCard}>
-            Visa / Mastercard / Paypal
+            Visa / Mastercard / PayPal
           </Button>
           <Button disabled={isLoading} onClick={handleBack}>
             {data.backButton}
