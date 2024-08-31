@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import type { SelectOption } from "react95/dist/Select/Select.types";
 
 import { customAlphabet } from "nanoid";
+import { numbers } from "nanoid-dictionary";
 import { useCallback, useEffect, useState } from "react";
 import { Anchor, Button, Hourglass, Select } from "react95";
 import { createScrollbars } from "react95/dist/common";
@@ -155,12 +156,7 @@ export function Community(): ReactNode {
   };
 
   const handleVNPay = (): void => {
-    const nanoid = customAlphabet(
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
-      10,
-    );
-    const newTransactionId = nanoid();
-    setTransactionId(newTransactionId);
+    setTransactionId(customAlphabet(numbers as string, 16)());
     setShowQRCode(true);
     setQrCodeExpirationTime(Date.now() + 5 * 60 * 1000);
     setIsCheckingTransaction(true);
@@ -308,7 +304,7 @@ export function Community(): ReactNode {
         <ModalOverlay>
           <ModalContent>
             <QRCodeImage
-              src={`https://qr.sepay.vn/img?bank=${process.env.NEXT_PUBLIC_SEPAY_BANK_NAME ?? ""}&acc=${process.env.NEXT_PUBLIC_SEPAY_BANK_ACCOUNT_NUMBER ?? ""}&template=compact&amount=2490000&des=PCommunity${transactionId}`}
+              src={`https://qr.sepay.vn/img?bank=${process.env.NEXT_PUBLIC_SEPAY_BANK_NAME ?? ""}&acc=${process.env.NEXT_PUBLIC_SEPAY_BANK_ACCOUNT_NUMBER ?? ""}&template=qronly&amount=${process.env.NEXT_PUBLIC_SEPAY_AMOUNT ?? "2490000"}&des=TMP${transactionId}`}
               alt="VNPay QR Code"
             />
             <QRCodeDescription>

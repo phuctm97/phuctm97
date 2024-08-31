@@ -6,13 +6,13 @@ import { sepayTransactions } from "~/lib/schema";
 export async function POST(request: Request): Promise<Response> {
   const secretHeader = request.headers.get("Authorization");
 
-  if (!secretHeader?.includes(process.env.SEPAY_WEBHOOK_SECRET))
+  if (secretHeader !== `Apikey ${process.env.SEPAY_WEBHOOK_SECRET}`)
     return Response.json({ error: "Invalid signature" }, { status: 401 });
 
   const rawData = await request.text();
   const data = JSON.parse(rawData) as SEpayTransaction;
 
-  if (!data.description?.includes("PCommunity"))
+  if (data.transferAmount !== Number(process.env.NEXT_PUBLIC_SEPAY_AMOUNT))
     return Response.json({ error: "Invalid transaction" }, { status: 400 });
 
   try {
