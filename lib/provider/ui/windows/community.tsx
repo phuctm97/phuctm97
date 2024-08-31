@@ -193,7 +193,7 @@ export function Community(): ReactNode {
       setIsCheckingTransaction(false);
       setShowQRCode(false);
       setError("");
-      location.href = `https://t.me/${process.env.NEXT_PUBLIC_TELEGRAM_COMMUNITY_BOT_ID ?? ""}?start=${transactionId}`;
+      location.href = `https://t.me/${process.env.NEXT_PUBLIC_TELEGRAM_COMMUNITY_BOT_ID}?start=${transactionId}`;
     }
   }, [transactionId]);
 
@@ -304,7 +304,7 @@ export function Community(): ReactNode {
         <ModalOverlay>
           <ModalContent>
             <QRCodeImage
-              src={`https://qr.sepay.vn/img?bank=${process.env.NEXT_PUBLIC_SEPAY_BANK_NAME ?? ""}&acc=${process.env.NEXT_PUBLIC_SEPAY_BANK_ACCOUNT_NUMBER ?? ""}&template=qronly&amount=${process.env.NEXT_PUBLIC_SEPAY_AMOUNT ?? "2490000"}&des=TMP${transactionId}`}
+              src={`https://qr.sepay.vn/img?bank=${process.env.NEXT_PUBLIC_SEPAY_BANK_NAME}&acc=${process.env.NEXT_PUBLIC_SEPAY_BANK_ACCOUNT_NUMBER}&template=qronly&amount=${process.env.NEXT_PUBLIC_SEPAY_AMOUNT}&des=TMP${transactionId}`}
               alt="VNPay QR Code"
             />
             <QRCodeDescription>

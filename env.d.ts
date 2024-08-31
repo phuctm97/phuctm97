@@ -1,5 +1,9 @@
 declare namespace NodeJS {
   interface ProcessEnv {
+    NEXT_PUBLIC_SEPAY_BANK_NAME: string;
+    NEXT_PUBLIC_SEPAY_BANK_ACCOUNT_NUMBER: string;
+    NEXT_PUBLIC_SEPAY_AMOUNT: string;
+    NEXT_PUBLIC_TELEGRAM_COMMUNITY_BOT_ID: string;
     LEMON_SQUEEZY_STORE_ID: string;
     LEMON_SQUEEZY_COMMUNITY_MEMBERSHIP_VARIANT_ID: string;
     LEMON_SQUEEZY_API_KEY: string;
