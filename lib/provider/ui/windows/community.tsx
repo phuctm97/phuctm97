@@ -156,7 +156,7 @@ export function Community(): ReactNode {
   };
 
   const handleVNPay = (): void => {
-    setTransactionId(customAlphabet(numbers as string, 16)());
+    setTransactionId(customAlphabet(numbers, 16)());
     setShowQRCode(true);
     setQrCodeExpirationTime(Date.now() + 5 * 60 * 1000);
     setIsCheckingTransaction(true);
