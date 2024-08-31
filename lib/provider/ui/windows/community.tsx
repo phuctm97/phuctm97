@@ -308,7 +308,7 @@ export function Community(): ReactNode {
         <ModalOverlay>
           <ModalContent>
             <QRCodeImage
-              src={`https://qr.sepay.vn/img?bank=${process.env.NEXT_PUBLIC_SEPAY_BANK_NAME ?? ""}&acc=${process.env.NEXT_PUBLIC_SEPAY_BANK_ACCOUNT_NUMBER ?? ""}&template=compact&amount=2000&des=PCommunity${transactionId}`}
+              src={`https://qr.sepay.vn/img?bank=${process.env.NEXT_PUBLIC_SEPAY_BANK_NAME ?? ""}&acc=${process.env.NEXT_PUBLIC_SEPAY_BANK_ACCOUNT_NUMBER ?? ""}&template=compact&amount=2490000&des=PCommunity${transactionId}`}
               alt="VNPay QR Code"
             />
             <QRCodeDescription>
