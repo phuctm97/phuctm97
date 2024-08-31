@@ -4,7 +4,7 @@ import {
   lemonSqueezySetup,
   validateLicense,
 } from "@lemonsqueezy/lemonsqueezy.js";
-import { like } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { Bot, webhookCallback } from "grammy";
 
 import { database } from "~/lib/database";
@@ -32,7 +32,7 @@ const handleLicense = async (
     const licenseStatus = await database
       .select()
       .from(communityLicense)
-      .where(like(communityLicense.code, `%${licenseKey}%`));
+      .where(eq(communityLicense.code, licenseKey));
     if (licenseStatus.length === 0) {
       await context.reply("License key is invalid. Please try again.");
       return;
