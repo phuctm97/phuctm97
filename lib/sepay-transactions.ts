@@ -2,8 +2,8 @@ import type { z } from "zod";
 
 import { createInsertSchema } from "drizzle-zod";
 
-import { sepayTransactions } from "~/lib/schema";
+import { communityLicense } from "~/lib/schema";
 
-const insertSEpayTransactionSchema = createInsertSchema(sepayTransactions);
+const insertCommunityLicenseSchema = createInsertSchema(communityLicense);
 
-export type SEpayTransaction = z.infer<typeof insertSEpayTransactionSchema>;
+export type CommunityLicense = z.infer<typeof insertCommunityLicenseSchema>;

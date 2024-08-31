@@ -1,7 +1,11 @@
-import type { SEpayTransaction } from "~/lib/sepay-transactions";
-
 import { database } from "~/lib/database";
-import { sepayTransactions } from "~/lib/schema";
+import { communityLicense } from "~/lib/schema";
+
+interface Transaction {
+  id: number;
+  code: string;
+  transferAmount: number;
+}
 
 export async function POST(request: Request): Promise<Response> {
   const secretHeader = request.headers.get("Authorization");
@@ -9,13 +13,23 @@ export async function POST(request: Request): Promise<Response> {
   if (secretHeader !== `Apikey ${process.env.SEPAY_WEBHOOK_SECRET}`)
     return Response.json({ error: "Invalid signature" }, { status: 401 });
 
-  const data = (await request.json()) as SEpayTransaction;
+  const data = (await request.json()) as Transaction;
 
-  if (data.transferAmount !== Number(process.env.NEXT_PUBLIC_SEPAY_AMOUNT))
+  if (
+    !data.code ||
+    data.transferAmount !== Number(process.env.NEXT_PUBLIC_SEPAY_AMOUNT)
+  )
     return Response.json({ error: "Invalid transaction" }, { status: 400 });
 
   try {
-    await database.insert(sepayTransactions).values(data).onConflictDoNothing();
+    await database
+      .insert(communityLicense)
+      .values({
+        code: data.code,
+        sepayId: data.id,
+        amount: data.transferAmount,
+      })
+      .onConflictDoNothing();
     return Response.json({ success: true });
   } catch (error) {
     console.error("Error saving transaction:", error);

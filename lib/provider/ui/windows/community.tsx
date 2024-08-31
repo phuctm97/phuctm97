@@ -145,7 +145,7 @@ export function Community(): ReactNode {
   const [error, setError] = useState("");
   const [currentView, setCurrentView] = useState<"main" | "payment">("main");
   const [showQRCode, setShowQRCode] = useState(false);
-  const [transactionId, setTransactionId] = useState("");
+  const [code, setCode] = useState("");
   const [isCheckingTransaction, setIsCheckingTransaction] = useState(false);
   const [qrCodeExpirationTime, setQrCodeExpirationTime] = useState(0);
   const [remainingTime, setRemainingTime] = useState(0);
@@ -156,7 +156,8 @@ export function Community(): ReactNode {
   };
 
   const handleVNPay = (): void => {
-    setTransactionId(customAlphabet(numbers, 16)());
+    const code = customAlphabet(numbers, 10);
+    setCode(code());
     setShowQRCode(true);
     setQrCodeExpirationTime(Date.now() + 5 * 60 * 1000);
     setIsCheckingTransaction(true);
@@ -186,16 +187,16 @@ export function Community(): ReactNode {
   };
 
   const checkSEPayTransaction = useCallback(async () => {
-    if (!transactionId) return;
+    if (!code) return;
 
-    const success = await checkSEPayTransactionSuccess(transactionId);
+    const success = await checkSEPayTransactionSuccess(code);
     if (success) {
       setIsCheckingTransaction(false);
       setShowQRCode(false);
       setError("");
-      location.href = `https://t.me/${process.env.NEXT_PUBLIC_TELEGRAM_COMMUNITY_BOT_ID}?start=${transactionId}`;
+      location.href = `https://t.me/${process.env.NEXT_PUBLIC_TELEGRAM_COMMUNITY_BOT_ID}?start=TMP${code}`;
     }
-  }, [transactionId]);
+  }, [code]);
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
@@ -304,7 +305,7 @@ export function Community(): ReactNode {
         <ModalOverlay>
           <ModalContent>
             <QRCodeImage
-              src={`https://qr.sepay.vn/img?bank=${process.env.NEXT_PUBLIC_SEPAY_BANK_NAME}&acc=${process.env.NEXT_PUBLIC_SEPAY_BANK_ACCOUNT_NUMBER}&template=qronly&amount=${process.env.NEXT_PUBLIC_SEPAY_AMOUNT}&des=TMP${transactionId}`}
+              src={`https://qr.sepay.vn/img?bank=${process.env.NEXT_PUBLIC_SEPAY_BANK_NAME}&acc=${process.env.NEXT_PUBLIC_SEPAY_BANK_ACCOUNT_NUMBER}&template=qronly&amount=${process.env.NEXT_PUBLIC_SEPAY_AMOUNT}&des=TMP${code}`}
               alt="VNPay QR Code"
             />
             <QRCodeDescription>

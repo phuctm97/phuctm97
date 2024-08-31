@@ -1,99 +1,37 @@
 {
-  "id": "06d38df7-f94d-4ab3-9168-e9f599987097",
+  "id": "812ad4a0-6a6f-4de7-ab3a-47280d2fd5cd",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.sepay_transactions": {
-      "name": "sepay_transactions",
+    "public.community_license": {
+      "name": "community_license",
       "schema": "",
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "gateway": {
-          "name": "gateway",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "transaction_date": {
-          "name": "transaction_date",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "account_number": {
-          "name": "account_number",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
         "code": {
           "name": "code",
           "type": "text",
-          "primaryKey": false,
-          "notNull": false
+          "primaryKey": true,
+          "notNull": true
         },
-        "content": {
-          "name": "content",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "transfer_type": {
-          "name": "transfer_type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "transfer_amount": {
-          "name": "transfer_amount",
+        "sepayId": {
+          "name": "sepayId",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
         },
-        "accumulated": {
-          "name": "accumulated",
+        "amount": {
+          "name": "amount",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
         },
-        "sub_account": {
-          "name": "sub_account",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "reference_code": {
-          "name": "reference_code",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "description": {
-          "name": "description",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp",
+        "activated": {
+          "name": "activated",
+          "type": "boolean",
           "primaryKey": false,
           "notNull": false,
-          "default": "now()"
-        },
-        "license_key_status": {
-          "name": "license_key_status",
-          "type": "license_key_status",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'inactive'"
+          "default": false
         }
       },
       "indexes": {},
@@ -102,16 +40,7 @@
       "uniqueConstraints": {}
     }
   },
-  "enums": {
-    "public.license_key_status": {
-      "name": "license_key_status",
-      "schema": "public",
-      "values": [
-        "inactive",
-        "active"
-      ]
-    }
-  },
+  "enums": {},
   "schemas": {},
   "sequences": {},
   "_meta": {

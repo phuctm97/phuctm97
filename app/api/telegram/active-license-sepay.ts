@@ -3,14 +3,14 @@ import type { Context } from "grammy";
 import { eq } from "drizzle-orm";
 
 import { database } from "~/lib/database";
-import { sepayTransactions } from "~/lib/schema";
+import { communityLicense } from "~/lib/schema";
 
 export async function activeLicenseSEPay(
   context: Context,
-  transactionId: number,
-  licenseKeyStatus: string | undefined | null,
+  code: string,
+  isActive: boolean | undefined | null,
 ): Promise<void> {
-  if (licenseKeyStatus === "active") {
+  if (isActive) {
     await context.reply("This license key has already been used");
     return;
   }
@@ -22,9 +22,9 @@ export async function activeLicenseSEPay(
     },
   );
   await database
-    .update(sepayTransactions)
-    .set({ licenseKeyStatus: "active" })
-    .where(eq(sepayTransactions.id, transactionId));
+    .update(communityLicense)
+    .set({ activated: true })
+    .where(eq(communityLicense.code, code));
   await context.reply(
     `License key valid! Here is the invite link to our group: ${inviteLink.invite_link}`,
   );

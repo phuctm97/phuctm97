@@ -8,7 +8,7 @@ import { like } from "drizzle-orm";
 import { Bot, webhookCallback } from "grammy";
 
 import { database } from "~/lib/database";
-import { sepayTransactions } from "~/lib/schema";
+import { communityLicense } from "~/lib/schema";
 
 import { activeLicenseLemonsquezzy } from "./active-license-lemonsquezzy";
 import { activeLicenseSEPay } from "./active-license-sepay";
@@ -31,16 +31,16 @@ const handleLicense = async (
   if (!validatedLicense.data?.valid) {
     const licenseStatus = await database
       .select()
-      .from(sepayTransactions)
-      .where(like(sepayTransactions.description, `%${licenseKey}%`));
+      .from(communityLicense)
+      .where(like(communityLicense.code, `%${licenseKey}%`));
     if (licenseStatus.length === 0) {
       await context.reply("License key is invalid. Please try again.");
       return;
     }
     await activeLicenseSEPay(
       context,
-      licenseStatus[0].id,
-      licenseStatus[0].licenseKeyStatus,
+      licenseStatus[0].code,
+      licenseStatus[0].activated,
     );
     return;
   }

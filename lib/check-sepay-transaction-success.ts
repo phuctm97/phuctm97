@@ -3,16 +3,16 @@
 import { like } from "drizzle-orm";
 
 import { database } from "~/lib/database";
-import { sepayTransactions } from "~/lib/schema";
+import { communityLicense } from "~/lib/schema";
 
 export async function checkSEPayTransactionSuccess(
-  id: string,
+  code: string,
 ): Promise<boolean> {
   try {
     const transactions = await database
       .select()
-      .from(sepayTransactions)
-      .where(like(sepayTransactions.description, `%${id}%`))
+      .from(communityLicense)
+      .where(like(communityLicense.code, `%${code}%`))
       .limit(1);
 
     return transactions.length > 0;
