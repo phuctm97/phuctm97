@@ -7,7 +7,8 @@ declare namespace NodeJS {
     TELEGRAM_COMMUNITY_BOT_TOKEN: string;
     TELEGRAM_COMMUNITY_GROUP_ID: string;
     TELEGRAM_COMMUNITY_WEBHOOK_SECRET_TOKEN: string;
-    TELEGRAM_COMMUNITY_BOT_ID: string;
-    SEPAY_API_TOKEN: string;
+    SEPAY_API_KEY: string;
+    SEPAY_WEBHOOK_SECRET: string;
+    POSTGRES_URL: string;
   }
 }

@@ -7,7 +7,6 @@ import { Anchor, Button, Hourglass, Select } from "react95";
 import { createScrollbars } from "react95/dist/common";
 import styled from "styled-components";
 
-import { addLicenseToKVRedirectTelegram } from "~/lib/add-license-kv-redirect-telegram";
 import { buyLicense } from "~/lib/buy-license";
 import { checkSEPayTransactionSuccess } from "~/lib/check-sepay-transaction-success";
 import { Window } from "~/lib/window";
@@ -198,10 +197,7 @@ export function Community(): ReactNode {
       setIsCheckingTransaction(false);
       setShowQRCode(false);
       setError("");
-      setIsLoading(true);
-      void addLicenseToKVRedirectTelegram(transactionId).finally(() => {
-        setIsLoading(false);
-      });
+      location.href = `https://t.me/${process.env.NEXT_PUBLIC_TELEGRAM_COMMUNITY_BOT_ID ?? ""}?start=${transactionId}`;
     }
   }, [transactionId]);
 
@@ -312,7 +308,7 @@ export function Community(): ReactNode {
         <ModalOverlay>
           <ModalContent>
             <QRCodeImage
-              src={`https://qr.sepay.vn/img?bank=${process.env.NEXT_PUBLIC_SEPAY_BANK_NAME ?? ""}&acc=${process.env.NEXT_PUBLIC_SEPAY_BANK_ACCOUNT_NUMBER ?? ""}&template=compact&amount=1999000&des=${transactionId}`}
+              src={`https://qr.sepay.vn/img?bank=${process.env.NEXT_PUBLIC_SEPAY_BANK_NAME ?? ""}&acc=${process.env.NEXT_PUBLIC_SEPAY_BANK_ACCOUNT_NUMBER ?? ""}&template=compact&amount=2000&des=PCommunity${transactionId}`}
               alt="VNPay QR Code"
             />
             <QRCodeDescription>

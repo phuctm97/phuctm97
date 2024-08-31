@@ -1,11 +1,14 @@
 import type { Context } from "grammy";
 
-import { kv } from "@vercel/kv";
+import { eq } from "drizzle-orm";
+
+import { database } from "~/lib/database";
+import { sepayTransactions } from "~/lib/schema";
 
 export async function activeLicenseSEPay(
   context: Context,
-  licenseKeyStatus: string,
-  licenseKey: string,
+  transactionId: number,
+  licenseKeyStatus: string | undefined | null,
 ): Promise<void> {
   if (licenseKeyStatus === "active") {
     await context.reply("This license key has already been used");
@@ -18,7 +21,10 @@ export async function activeLicenseSEPay(
       member_limit: 1,
     },
   );
-  await kv.set(`license-${licenseKey}`, "active");
+  await database
+    .update(sepayTransactions)
+    .set({ licenseKeyStatus: "active" })
+    .where(eq(sepayTransactions.id, transactionId));
   await context.reply(
     `License key valid! Here is the invite link to our group: ${inviteLink.invite_link}`,
   );

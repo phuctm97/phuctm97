@@ -4,8 +4,11 @@ import {
   lemonSqueezySetup,
   validateLicense,
 } from "@lemonsqueezy/lemonsqueezy.js";
-import { kv } from "@vercel/kv";
+import { like } from "drizzle-orm";
 import { Bot, webhookCallback } from "grammy";
+
+import { database } from "~/lib/database";
+import { sepayTransactions } from "~/lib/schema";
 
 import { activeLicenseLemonsquezzy } from "./active-license-lemonsquezzy";
 import { activeLicenseSEPay } from "./active-license-sepay";
@@ -26,12 +29,19 @@ const handleLicense = async (
   const validatedLicense = await validateLicense(licenseKey);
 
   if (!validatedLicense.data?.valid) {
-    const licenseStatus = await kv.get(`license-${licenseKey}`);
-    if (!licenseStatus) {
+    const licenseStatus = await database
+      .select()
+      .from(sepayTransactions)
+      .where(like(sepayTransactions.description, `%${licenseKey}%`));
+    if (licenseStatus.length === 0) {
       await context.reply("License key is invalid. Please try again.");
       return;
     }
-    await activeLicenseSEPay(context, licenseStatus as string, licenseKey);
+    await activeLicenseSEPay(
+      context,
+      licenseStatus[0].id,
+      licenseStatus[0].licenseKeyStatus,
+    );
     return;
   }
 
