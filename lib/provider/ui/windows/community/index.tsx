@@ -133,12 +133,12 @@ export function Community(): ReactNode {
   const [windowSize, setWindowSize] = useState<{
     width: number;
     height: number;
-  }>({ width: 0, height: 0 });
+  }>({ width: 1200, height: 750 });
   const windowRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const checkMobile = (): void => {
-      setIsMobile(windowSize.width <= 768);
+      setIsMobile(windowSize.width <= 600);
     };
 
     checkMobile();
@@ -205,8 +205,12 @@ export function Community(): ReactNode {
           <CommunityImage
             src={communityImage.src}
             alt="Community"
-            maxWidth={isMobile ? innerWidth : innerWidth * 0.45}
-            maxHeight={isMobile ? innerHeight * 0.3 : innerHeight * 0.6}
+            maxWidth={
+              isMobile ? windowSize.width * 0.45 : windowSize.width * 0.5
+            }
+            maxHeight={
+              isMobile ? windowSize.height * 0.3 : windowSize.height * 0.75
+            }
             isMobile={isMobile}
           />
         </ImageContainer>
