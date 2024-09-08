@@ -8,7 +8,13 @@ import type {
 
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { useAtomValue, useSetAtom } from "jotai";
-import { forwardRef, useCallback, useEffect, useState } from "react";
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useState,
+} from "react";
 import {
   Button,
   Window as React95Window,
@@ -157,9 +163,10 @@ export type WindowProps = PropsWithChildren<{
 
 export const Window = forwardRef<HTMLDivElement, WindowProps>(function Window(
   { window, className, defaultWidth, defaultHeight, children },
-  ref,
+  forwardRef,
 ): ReactNode {
-  const [element, setElement] = useNullableState<HTMLElement>();
+  const [element, ref] = useNullableState<HTMLElement>();
+  useImperativeHandle(forwardRef, () => element as HTMLDivElement, [element]);
   const [rect, setRect] = useState<Rect>();
   useEffect(() => {
     if (!element) {
@@ -264,11 +271,7 @@ export const Window = forwardRef<HTMLDivElement, WindowProps>(function Window(
   const isActive = useAtomValue(isActiveWindowAtomFamily(window));
   return (
     <StyledWindow
-      ref={(element) => {
-        if (typeof ref === "function") ref(element);
-        else if (ref) ref.current = element;
-        setElement(element);
-      }}
+      ref={ref}
       resizeRef={resizeRef}
       style={{
         zIndex: isActive ? 1 : 0,

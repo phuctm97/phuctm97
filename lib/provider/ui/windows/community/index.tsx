@@ -3,13 +3,14 @@ import type { ReactNode } from "react";
 import type { CommonProps, Language } from "./types";
 
 import { User, User2, User3, Wab321019 } from "@react95/icons";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, MenuList, MenuListItem, Separator } from "react95";
 import styled from "styled-components";
 
+import { useNullableState } from "~/lib/use-nullable-state";
 import { Window } from "~/lib/window";
 
-import communityImage from "./community.png";
+import communityImage from "./community.webp";
 import { Payment } from "./payment";
 import { content } from "./types";
 
@@ -134,7 +135,7 @@ export function Community(): ReactNode {
     width: number;
     height: number;
   }>({ width: 1200, height: 750 });
-  const windowRef = useRef<HTMLDivElement>(null);
+  const [element, ref] = useNullableState<HTMLDivElement>();
 
   useEffect(() => {
     const checkMobile = (): void => {
@@ -150,7 +151,7 @@ export function Community(): ReactNode {
   }, [windowSize]);
 
   useEffect(() => {
-    if (!windowRef.current) return;
+    if (!element) return;
 
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
@@ -159,12 +160,12 @@ export function Community(): ReactNode {
       }
     });
 
-    resizeObserver.observe(windowRef.current);
+    resizeObserver.observe(element);
 
     return () => {
       resizeObserver.disconnect();
     };
-  }, []);
+  }, [element]);
 
   const handleToggleView = (): void => {
     setCurrentView(currentView === "main" ? "payment" : "main");
@@ -198,7 +199,7 @@ export function Community(): ReactNode {
       window="Community"
       defaultWidth={1200}
       defaultHeight={750}
-      ref={windowRef}
+      ref={ref}
     >
       <ContentWrapper isMobile={isMobile}>
         <ImageContainer isMobile={isMobile}>
