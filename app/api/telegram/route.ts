@@ -1,14 +1,13 @@
 import type { Context } from "grammy";
 
+import type { LicenseData } from "~/lib/license-data";
+
 import {
   lemonSqueezySetup,
   validateLicense,
 } from "@lemonsqueezy/lemonsqueezy.js";
-import { eq } from "drizzle-orm";
+import { kv } from "@vercel/kv";
 import { Bot, webhookCallback } from "grammy";
-
-import { database } from "~/lib/database";
-import { communityLicense } from "~/lib/schema";
 
 import { activeLicenseLemonsquezzy } from "./active-license-lemonsquezzy";
 import { activeLicenseSEPay } from "./active-license-sepay";
@@ -29,18 +28,16 @@ const handleLicense = async (
   const validatedLicense = await validateLicense(licenseKey);
 
   if (!validatedLicense.data?.valid) {
-    const licenseStatus = await database
-      .select()
-      .from(communityLicense)
-      .where(eq(communityLicense.code, licenseKey));
-    if (licenseStatus.length === 0) {
+    const key = `license:${licenseKey}`;
+    const licenseStatus = await kv.get<LicenseData>(key);
+    if (!licenseStatus) {
       await context.reply("License key is invalid. Please try again.");
       return;
     }
     await activeLicenseSEPay(
       context,
-      licenseStatus[0].code,
-      licenseStatus[0].activated,
+      licenseStatus.code,
+      licenseStatus.activated,
     );
     return;
   }

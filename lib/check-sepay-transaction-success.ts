@@ -1,23 +1,16 @@
 "use server";
 
-import { like } from "drizzle-orm";
+import type { LicenseData } from "~/lib/license-data";
 
-import { database } from "~/lib/database";
-import { communityLicense } from "~/lib/schema";
+import { kv } from "@vercel/kv";
 
 export async function checkSEPayTransactionSuccess(
   code: string,
 ): Promise<boolean> {
-  try {
-    const transactions = await database
-      .select()
-      .from(communityLicense)
-      .where(like(communityLicense.code, `%${code}%`))
-      .limit(1);
+  const key = `license:TMP${code}`;
+  const licenseData = await kv.get<LicenseData>(key);
 
-    return transactions.length > 0;
-  } catch (error) {
-    console.error("Error checking SEPay transaction:", error);
-    return false;
-  }
+  if (!licenseData) return false;
+
+  return licenseData.amount === Number(process.env.NEXT_PUBLIC_SEPAY_AMOUNT);
 }

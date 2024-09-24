@@ -1,5 +1,6 @@
-import { database } from "~/lib/database";
-import { communityLicense } from "~/lib/schema";
+import { kv } from "@vercel/kv";
+
+import { LicenseDataSchema } from "~/lib/license-data";
 
 interface Transaction {
   id: number;
@@ -22,14 +23,18 @@ export async function POST(request: Request): Promise<Response> {
     return Response.json({ error: "Invalid transaction" }, { status: 400 });
 
   try {
-    await database
-      .insert(communityLicense)
-      .values({
+    const key = `license:${data.code}`;
+    const existingLicense = await kv.get(key);
+    if (!existingLicense) {
+      const licenseData = LicenseDataSchema.parse({
         code: data.code,
         sepayId: data.id,
         amount: data.transferAmount,
-      })
-      .onConflictDoNothing();
+        activated: false,
+      });
+      await kv.set(key, licenseData);
+    }
+
     return Response.json({ success: true });
   } catch (error) {
     console.error("Error saving transaction:", error);
