@@ -1,12 +1,13 @@
+import type { LicenseData } from "~/lib/license-data";
+
 import { kv } from "@vercel/kv";
+import { z } from "zod";
 
-import { LicenseDataSchema } from "~/lib/license-data";
-
-interface Transaction {
-  id: number;
-  code: string;
-  transferAmount: number;
-}
+const Transaction = z.object({
+  id: z.number(),
+  code: z.string(),
+  transferAmount: z.number(),
+});
 
 export async function POST(request: Request): Promise<Response> {
   const secretHeader = request.headers.get("Authorization");
@@ -14,7 +15,7 @@ export async function POST(request: Request): Promise<Response> {
   if (secretHeader !== `Apikey ${process.env.SEPAY_WEBHOOK_SECRET}`)
     return Response.json({ error: "Invalid signature" }, { status: 401 });
 
-  const data = (await request.json()) as Transaction;
+  const data = Transaction.parse(await request.json());
 
   if (
     !data.code ||
@@ -24,17 +25,16 @@ export async function POST(request: Request): Promise<Response> {
 
   try {
     const key = `license:${data.code}`;
-    const existingLicense = await kv.get(key);
+    const existingLicense = await kv.get<LicenseData>(key);
     if (!existingLicense) {
-      const licenseData = LicenseDataSchema.parse({
+      const licenseData: LicenseData = {
         code: data.code,
         sepayId: data.id,
         amount: data.transferAmount,
         activated: false,
-      });
+      };
       await kv.set(key, licenseData);
     }
-
     return Response.json({ success: true });
   } catch (error) {
     console.error("Error saving transaction:", error);

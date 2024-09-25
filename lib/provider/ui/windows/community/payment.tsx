@@ -65,6 +65,8 @@ const StyledTabBody = styled(TabBody)`
   justify-content: center;
 `;
 
+const generateCode = customAlphabet(numbers, 10);
+
 export function Payment({ data, setError }: CommonProps): ReactNode {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showQRCode, setShowQRCode] = useState<boolean>(false);
@@ -76,8 +78,7 @@ export function Payment({ data, setError }: CommonProps): ReactNode {
   const [activeTab, setActiveTab] = useState<number>(0);
 
   const handleVNPay = (): void => {
-    const code = customAlphabet(numbers, 10);
-    setCode(code());
+    setCode(`TMP${generateCode()}`);
     setShowQRCode(true);
     setQrCodeExpirationTime(Date.now() + 5 * 60 * 1000);
     setIsCheckingTransaction(true);
@@ -104,7 +105,7 @@ export function Payment({ data, setError }: CommonProps): ReactNode {
       setIsCheckingTransaction(false);
       setShowQRCode(false);
       setError("");
-      location.href = `https://t.me/${process.env.NEXT_PUBLIC_TELEGRAM_COMMUNITY_BOT_ID}?start=TMP${code}`;
+      location.href = `https://t.me/${process.env.NEXT_PUBLIC_TELEGRAM_COMMUNITY_BOT_ID}?start=${code}`;
     }
   }, [code, setError]);
 
@@ -167,7 +168,7 @@ export function Payment({ data, setError }: CommonProps): ReactNode {
           {showQRCode ? (
             <>
               <QRCodeImage
-                src={`https://qr.sepay.vn/img?bank=${process.env.NEXT_PUBLIC_SEPAY_BANK_NAME}&acc=${process.env.NEXT_PUBLIC_SEPAY_BANK_ACCOUNT_NUMBER}&template=qronly&amount=${process.env.NEXT_PUBLIC_SEPAY_AMOUNT}&des=TMP${code}`}
+                src={`https://qr.sepay.vn/img?bank=${process.env.NEXT_PUBLIC_SEPAY_BANK_NAME}&acc=${process.env.NEXT_PUBLIC_SEPAY_BANK_ACCOUNT_NUMBER}&template=qronly&amount=${process.env.NEXT_PUBLIC_SEPAY_AMOUNT}&des=${code}`}
                 alt="VNPay QR Code"
               />
               <QRCodeDescription>

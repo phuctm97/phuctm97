@@ -7,7 +7,7 @@ import { kv } from "@vercel/kv";
 export async function checkSEPayTransactionSuccess(
   code: string,
 ): Promise<boolean> {
-  const key = `license:TMP${code}`;
+  const key = `license:${code}`;
   const licenseData = await kv.get<LicenseData>(key);
 
   if (!licenseData) return false;
