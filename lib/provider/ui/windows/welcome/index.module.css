@@ -26,6 +26,9 @@
   .actionButtonsContainer svg {
     display: inline-block !important;
   }
+  .actionButtonsContainer .externalLinkSymbol {
+    display: none;
+  }
   .buttonGroup {
     flex-direction: row !important;
   }

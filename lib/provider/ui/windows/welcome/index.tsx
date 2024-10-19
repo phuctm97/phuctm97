@@ -28,7 +28,7 @@ const StyledFrame = styled(Frame)`
       mainColor: theme.tooltip,
       secondaryColor: theme.canvas,
     })};
-  ${createScrollbars()};
+  ${createScrollbars()}
 `;
 
 const StyledSeparator = styled(Separator)`
@@ -331,13 +331,15 @@ export function Welcome(): ReactNode {
               css="flex-shrink: 0; margin-top: 10px;"
               onClick={openGithub}
             >
-              GitHub ↗
+              GitHub
+              <span className={cssModule.externalLinkSymbol}> ↗</span>
             </Button>
             <Button
               css="flex-shrink: 0; margin-top: 10px;"
               onClick={openXOrTwitter}
             >
-              X/Twitter ↗
+              X/Twitter
+              <span className={cssModule.externalLinkSymbol}> ↗</span>
             </Button>
           </ButtonGroup>
         </ActionButtonsContainer>
