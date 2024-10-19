@@ -11,17 +11,11 @@ import {
 import { useCallback, useState } from "react";
 import { Anchor, Button, Frame, Separator } from "react95";
 import { createHatchedBackground, createScrollbars } from "react95/dist/common";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 
 import { Window } from "~/lib/window";
 
-const MOBILE_BREAKPOINT = 480;
-
-const mobileStyles = (styles: string): ReturnType<typeof css> => css`
-  @media (max-width: ${MOBILE_BREAKPOINT}px) {
-    ${styles}
-  }
-`;
+import cssModule from "./index.module.css";
 
 const StyledFrame = styled(Frame)`
   flex-grow: 1;
@@ -35,7 +29,12 @@ const StyledFrame = styled(Frame)`
       secondaryColor: theme.canvas,
     })};
   ${createScrollbars()};
-  ${mobileStyles("margin-right: 0;")}
+`;
+
+const StyledSeparator = styled(Separator)`
+  flex-shrink: 0;
+  margin-top: 40px;
+  margin-bottom: 20px;
 `;
 
 const StyledTitle = styled.h1`
@@ -43,8 +42,6 @@ const StyledTitle = styled.h1`
   font-size: 2rem;
   line-height: 2.625rem;
   font-weight: bold;
-
-  ${mobileStyles("font-size: 1.5rem;")}
 `;
 
 const ContentWindow = styled.div`
@@ -53,8 +50,6 @@ const ContentWindow = styled.div`
   display: flex;
   overflow: hidden;
   margin-top: 10px;
-
-  ${mobileStyles("flex-direction: column;")}
 `;
 
 const ActionButtonsContainer = styled.div`
@@ -66,32 +61,11 @@ const ActionButtonsContainer = styled.div`
   svg {
     display: none;
   }
-
-  ${mobileStyles(`
-    flex-direction: row;
-    justify-content: space-between;
-
-    button {
-      margin-top: 0;
-    };
-
-    span {
-      display: none;
-    };
-
-    svg {
-      display: inline-block;
-    }
-  `)}
 `;
 
 const ButtonGroup = styled.div`
   display: flex;
   flex-direction: column;
-
-  ${mobileStyles(`
-    flex-direction: row;
-  `)}
 `;
 
 function openGithub(): void {
@@ -319,43 +293,40 @@ export function Welcome(): ReactNode {
     setTab("acknowledgements");
   }, [setTab]);
   return (
-    <Window window="Welcome" defaultWidth={720} defaultHeight={454}>
-      <StyledTitle>Welcome to @phuctm97</StyledTitle>
-      <ContentWindow>
-        <StyledFrame variant="well">
+    <Window
+      window="Welcome"
+      defaultWidth={720}
+      defaultHeight={454}
+      className={cssModule.window}
+    >
+      <StyledTitle className={cssModule.title}>
+        Welcome to @phuctm97
+      </StyledTitle>
+      <ContentWindow className={cssModule.contentWindowWrapper}>
+        <StyledFrame variant="well" className={cssModule.contentWrapperFrame}>
           <Content tab={tab} />
         </StyledFrame>
-        <ActionButtonsContainer>
-          <ButtonGroup>
+        <ActionButtonsContainer className={cssModule.actionButtonsContainer}>
+          <ButtonGroup className={cssModule.buttonGroup}>
             <Button css="flex-shrink: 0;" onClick={handleClickAboutWebsite}>
               <span>About this Website</span>
               <Confcp102 />
             </Button>
             <Button
-              css={css`
-                flex-shrink: 0;
-                margin-top: 10px;
-                ${mobileStyles("padding-right: 0;")}
-              `}
+              css="flex-shrink: 0; margin-top: 10px;"
+              className={cssModule.button}
               onClick={handleClickAboutAuthor}
             >
               <span>About the Author</span>
               <Ulclient1002 />
             </Button>
-            <Separator
-              css={css`
-                flex-shrink: 0;
-                margin-top: 40px;
-                margin-bottom: 20px;
-                ${mobileStyles("display: none;")}
-              `}
-            />
+            <StyledSeparator className={cssModule.separator} />
             <Button css="flex-shrink: 0;" onClick={handleClickAcknowledgements}>
               <span>Acknowledgements</span>
               <Bookmark />
             </Button>
           </ButtonGroup>
-          <ButtonGroup>
+          <ButtonGroup className={cssModule.buttonGroup}>
             <Button
               css="flex-shrink: 0; margin-top: 10px;"
               onClick={openGithub}

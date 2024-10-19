@@ -1,0 +1,38 @@
+.window {
+  container-name: window;
+  container-type: inline-size;
+}
+
+@container window (max-width: 480px) {
+  .contentWrapperFrame {
+    margin-right: 0 !important;
+  }
+  .title {
+    font-size: 1.5rem !important;
+  }
+  .contentWindowWrapper {
+    flex-direction: column !important;
+  }
+  .actionButtonsContainer {
+    flex-direction: row !important;
+    justify-content: space-between !important;
+  }
+  .actionButtonsContainer button {
+    margin-top: 0 !important;
+  }
+  .actionButtonsContainer span {
+    display: none !important;
+  }
+  .actionButtonsContainer svg {
+    display: inline-block !important;
+  }
+  .buttonGroup {
+    flex-direction: row !important;
+  }
+  .button {
+    padding-right: 0 !important;
+  }
+  .separator {
+    display: none !important;
+  }
+}
