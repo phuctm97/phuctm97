@@ -4,13 +4,13 @@ import { useSetAtom } from "jotai";
 import { Button, Toolbar } from "react95";
 import styled from "styled-components";
 
-import { foundationAtom } from "~/lib/solitaire-foudation-atom";
 import { stock } from "~/lib/solitaire-global";
-import { tableauAtom } from "~/lib/solitaire-tableau-atom";
-import { wasteAtom } from "~/lib/solitaire-waste-atom";
 import { Window } from "~/lib/window";
 
+import { foundationAtom } from "./foudation-atom";
 import { Game, init } from "./game";
+import { tableauAtom } from "./tableau-atom";
+import { wasteAtom } from "./waste-atom";
 
 export function Solitaire(): ReactNode {
   const setWaste = useSetAtom(wasteAtom);

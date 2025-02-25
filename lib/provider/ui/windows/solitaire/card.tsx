@@ -8,8 +8,9 @@ import { useDrag, useDrop } from "react-dnd";
 import styled from "styled-components";
 
 import { cardHeight, cardWidth } from "~/lib/solitaire-constant";
-import { moveCardAtom } from "~/lib/solitaire-move-card-atom";
 import img from "~/lib/solitaire-spritesheet.png";
+
+import { moveCardAtom } from "./move-card-atom";
 
 const CardStyled = styled.div<{
   card: Card;

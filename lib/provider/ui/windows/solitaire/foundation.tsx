@@ -3,9 +3,9 @@ import type { ReactNode } from "react";
 import { useAtomValue } from "jotai";
 
 import { absolute } from "~/lib/solitaire-constant";
-import { foundationAtom } from "~/lib/solitaire-foudation-atom";
 
 import { Card } from "./card";
+import { foundationAtom } from "./foudation-atom";
 import { Holder } from "./holder";
 
 export function Foundation(): ReactNode {

@@ -7,9 +7,10 @@ import {
   canMoveToFoundation,
   canMoveToTableau,
 } from "~/lib/solitaire-card-validation";
-import { foundationAtom } from "~/lib/solitaire-foudation-atom";
-import { tableauAtom } from "~/lib/solitaire-tableau-atom";
-import { wasteAtom } from "~/lib/solitaire-waste-atom";
+
+import { foundationAtom } from "./foudation-atom";
+import { tableauAtom } from "./tableau-atom";
+import { wasteAtom } from "./waste-atom";
 
 interface MoveCardParams {
   card: Card;

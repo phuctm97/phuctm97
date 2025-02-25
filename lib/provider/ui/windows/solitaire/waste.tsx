@@ -4,9 +4,9 @@ import { useAtomValue } from "jotai";
 import styled from "styled-components";
 
 import { absolute, cardHeight, cardWidth } from "~/lib/solitaire-constant";
-import { wasteAtom } from "~/lib/solitaire-waste-atom";
 
 import { Card } from "./card";
+import { wasteAtom } from "./waste-atom";
 
 const WasteWrapper = styled.div`
   display: flex;

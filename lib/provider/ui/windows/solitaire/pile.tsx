@@ -12,7 +12,8 @@ import {
 } from "~/lib/solitaire-constant";
 import { stock } from "~/lib/solitaire-global";
 import img from "~/lib/solitaire-spritesheet.png";
-import { wasteAtom } from "~/lib/solitaire-waste-atom";
+
+import { wasteAtom } from "./waste-atom";
 
 const PileStyled = styled.div`
   display: flex;

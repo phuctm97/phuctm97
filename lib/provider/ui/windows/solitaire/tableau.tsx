@@ -6,10 +6,10 @@ import { useAtomValue } from "jotai";
 import styled from "styled-components";
 
 import { cardWidth } from "~/lib/solitaire-constant";
-import { tableauAtom } from "~/lib/solitaire-tableau-atom";
 
 import { Card as CardComponent } from "./card";
 import { Holder } from "./holder";
+import { tableauAtom } from "./tableau-atom";
 
 const TableauWrapperStyled = styled.div`
   display: flex;
