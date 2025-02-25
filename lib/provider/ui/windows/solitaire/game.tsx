@@ -18,10 +18,10 @@ import { stock } from "~/lib/solitaire-global";
 import { tableauAtom } from "~/lib/solitaire-tableau-atom";
 import { isBlack, shuffleCards, updateCardInfo } from "~/lib/solitaire-utils";
 
-import { Foundation } from "./components/foundation";
-import { Pile } from "./components/pile";
-import { Tableau } from "./components/tableau";
-import { Waste } from "./components/waste";
+import { Foundation } from "./foundation";
+import { Pile } from "./pile";
+import { Tableau } from "./tableau";
+import { Waste } from "./waste";
 
 const Wrapper = styled.div`
   display: flex;
