@@ -46,6 +46,7 @@ function Document({ children }: PropsWithChildren): ReactNode {
   const theme = useAtomValue(themeAtom);
   return <ThemeProvider theme={theme}>{children}</ThemeProvider>;
 }
+
 export function UI({ children }: PropsWithChildren): ReactNode {
   return (
     <Provider>
