@@ -1,16 +1,17 @@
-import type { Card } from "~/lib/solitaire-card-interface";
-import type { Place } from "~/lib/solitaire-types";
+import type { Card, Place } from "./type";
 
 import { atom } from "jotai";
 
-import {
-  canMoveToFoundation,
-  canMoveToTableau,
-} from "~/lib/solitaire-card-validation";
+import { atomWithWriteOnly } from "~/lib/atom-with-write-only";
 
-import { foundationAtom } from "./foudation-atom";
-import { tableauAtom } from "./tableau-atom";
-import { wasteAtom } from "./waste-atom";
+export const foundationAtom = atom<Record<number, Card[]>>({
+  0: [],
+  1: [],
+  2: [],
+  3: [],
+});
+export const wasteAtom = atom<Card[]>([]);
+export const tableauAtom = atom<Record<number, Card[]>>({});
 
 interface MoveCardParams {
   card: Card;
@@ -24,8 +25,7 @@ interface MoveCardParams {
   };
 }
 
-export const moveCardAtom = atom(
-  null,
+export const moveCardAtom = atomWithWriteOnly(
   (get, set, { card, from, to }: MoveCardParams) => {
     switch (from.place) {
       case "tableau": {
@@ -109,10 +109,9 @@ export const moveCardAtom = atom(
         break;
       }
       case "foundation": {
-        const foundation = { ...get(foundationAtom) };
-        const [movedCard] = foundation[from.column].splice(-1, 1);
-
         if (to.place === "tableau") {
+          const foundation = { ...get(foundationAtom) };
+          const [movedCard] = foundation[from.column].splice(-1, 1);
           const tableau = { ...get(tableauAtom) };
           const targetColumn = tableau[to.column];
 
@@ -132,3 +131,25 @@ export const moveCardAtom = atom(
     }
   },
 );
+
+function canMoveToFoundation(sourceCard: Card, targetColumn: Card[]): boolean {
+  const lastCard = targetColumn.at(-1);
+
+  if (!lastCard) return sourceCard.number === 1;
+  console.log(sourceCard, lastCard);
+  return (
+    lastCard.type === sourceCard.type &&
+    lastCard.number === sourceCard.number - 1
+  );
+}
+
+function canMoveToTableau(sourceCard: Card, targetColumn: Card[]): boolean {
+  const lastCard = targetColumn.at(-1);
+
+  if (!lastCard) return sourceCard.number === 13;
+
+  return (
+    lastCard.black !== sourceCard.black &&
+    lastCard.number === sourceCard.number + 1
+  );
+}
