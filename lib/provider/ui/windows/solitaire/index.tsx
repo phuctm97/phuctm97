@@ -4,7 +4,7 @@ import type { CSSProperties } from "styled-components";
 import { Winmine1 } from "@react95/icons";
 import { motion } from "framer-motion";
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import {
@@ -453,6 +453,7 @@ function Waste(): ReactNode {
   const waste = useAtomValue(wasteAtom);
   const tableau = useAtomValue(tableauAtom);
   const setAutoMove = useSetAtom(autoMoveAtom);
+  const [isDisabled, setIsDisabled] = useState(false);
 
   // check can solved the game by the cards in waste, stock, and tableau are facing up
   const isCanSolved = useMemo(
@@ -480,7 +481,9 @@ function Waste(): ReactNode {
           }}
           onClick={() => {
             setAutoMove(true);
+            setIsDisabled(true);
           }}
+          disabled={isDisabled}
           title="Auto-solve the game if possible"
         >
           Solve game
