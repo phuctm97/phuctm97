@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import type { CSSProperties } from "styled-components";
 
+import { motion } from "framer-motion";
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useEffect, useRef } from "react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
@@ -23,6 +24,8 @@ const absolute: CSSProperties = {
   top: 0,
 };
 const stock: Card[] = [];
+
+const foundationPositions: Record<string, { left: number; top: number }> = {};
 
 type Type = "clubs" | "diamonds" | "hearts" | "spades";
 type Place = "waste" | "foundation" | "tableau";
@@ -47,6 +50,7 @@ const foundationAtom = atom<Record<number, Card[]>>({
 });
 const wasteAtom = atom<Card[]>([]);
 const tableauAtom = atom<Record<number, Card[]>>({});
+const autoMoveAtom = atom<boolean>(false);
 
 interface MoveCardParams {
   card: Card;
@@ -60,6 +64,55 @@ interface MoveCardParams {
   };
 }
 
+// Add this new helper function for animations
+async function animateCardToFoundation(
+  card: Card,
+  sourceColumn: Card[],
+  toColumn: number,
+): Promise<void> {
+  return new Promise<void>((resolve) => {
+    const sourceElement = document.querySelector(`#${card.id}`);
+    console.log("Animating", card.id);
+    if (sourceElement) {
+      const sourceRect = {
+        left: sourceElement.getBoundingClientRect().left,
+        top: sourceElement.getBoundingClientRect().top,
+      };
+      if (sourceColumn.length > 1)
+        sourceRect.top += (sourceColumn.length - 1) * 15;
+
+      const targetPosition = {
+        left: foundationPositions[`foundation-${toColumn.toString()}`].left,
+        top: foundationPositions[`foundation-${toColumn.toString()}`].top,
+      };
+
+      const animation = sourceElement.animate(
+        [
+          { transform: "translate(0, 0)" },
+          {
+            transform: `translate(${String(
+              targetPosition.left - sourceRect.left,
+            )}px, ${String(targetPosition.top - sourceRect.top)}px)`,
+          },
+        ],
+        {
+          duration: 500,
+          easing: "ease-in-out",
+          fill: "forwards",
+        },
+      );
+
+      animation.onfinish = () => {
+        console.log("Done", card.id);
+        resolve();
+      };
+    } else {
+      resolve();
+    }
+  });
+}
+
+// Update the moveCardAtom to use the new animation function
 const moveCardAtom = atomWithWriteOnly(
   (get, set, { card, from, to }: MoveCardParams) => {
     switch (from.place) {
@@ -210,7 +263,7 @@ const Upper = styled.div`
   padding: 5px;
 `;
 
-function init(setTableau: (tableau: Record<number, Card[]>) => void): void {
+const initAtom = atomWithWriteOnly((get, set) => {
   const cards: Card[] = [];
   const types: Type[] = ["clubs", "diamonds", "hearts", "spades"];
 
@@ -255,19 +308,35 @@ function init(setTableau: (tableau: Record<number, Card[]>) => void): void {
     card.place = "waste";
   }
 
-  setTableau(tableau);
-}
+  set(autoMoveAtom, false);
+  set(tableauAtom, tableau);
+});
 
 function Game(): ReactNode {
   const initialized = useRef(false);
-  const [tableau, setTableau] = useAtom(tableauAtom);
+  const tableau = useAtomValue(tableauAtom);
+  const foundation = useAtomValue(foundationAtom);
+  const initGame = useSetAtom(initAtom);
 
   useEffect(() => {
-    if (initialized.current) return;
-
-    init(setTableau);
+    if (initialized.current) {
+      const tableauCards = Object.values(tableau).flat();
+      const foundationCards = new Set(Object.values(foundation).flat());
+      // if is there same card in tableauCards and foundationCards and stock, then return
+      const sameCard = tableauCards.find(
+        (card) => foundationCards.has(card) && stock.includes(card),
+      );
+      if (sameCard) {
+        console.log("same card", sameCard.id);
+        return;
+      }
+      console.log("no same card");
+      return;
+    }
+    console.log("init game");
+    initGame();
     initialized.current = true;
-  }, [setTableau]);
+  }, [foundation, initGame, tableau]);
 
   if (Object.keys(tableau).length === 0) return undefined;
 
@@ -287,7 +356,7 @@ function Game(): ReactNode {
   );
 }
 
-const CardStyled = styled.div<{
+const CardStyled = styled(motion.div)<{
   card: Card;
 }>`
   display: flex;
@@ -357,7 +426,7 @@ function CardComponent({
 
   return drag(
     drop(
-      <div>
+      <div id={card.id}>
         <CardStyled
           card={card}
           style={{ ...style, opacity: isDragging ? 0 : 1 }}
@@ -413,6 +482,8 @@ function BoardColumn({
   cards: Card[];
   columnIndex: number;
 }): ReactNode {
+  const autoMove = useAtomValue(autoMoveAtom);
+
   let nestedComponents: ReactNode | undefined = undefined;
 
   for (let index = cards.length - 1; index >= 0; index--) {
@@ -434,6 +505,32 @@ function BoardColumn({
     );
   }
 
+  if (autoMove) {
+    return (
+      <TableauColumnStyled>
+        <Holder
+          place="tableau"
+          columnIndex={columnIndex}
+          canDrop={cards.length === 0}
+        >
+          {cards.map((card, index) => (
+            <CardComponent
+              key={card.id}
+              card={card}
+              style={{
+                position: "absolute",
+                left: 0,
+                top: `${String(index * 15)}px`, // vertical offset for stacking cards
+              }}
+              canDrag={false}
+              canDrop={false}
+            />
+          ))}
+        </Holder>
+      </TableauColumnStyled>
+    );
+  }
+
   return (
     <TableauColumnStyled>
       <Holder
@@ -450,6 +547,37 @@ function BoardColumn({
 function Foundation(): ReactNode {
   const foundation = useAtomValue(foundationAtom);
 
+  useEffect(() => {
+    const found0 = document.querySelector("#foundation-0");
+    if (found0) {
+      foundationPositions["foundation-0"] = {
+        left: found0.getBoundingClientRect().left,
+        top: found0.getBoundingClientRect().top,
+      };
+    }
+    const found1 = document.querySelector("#foundation-1");
+    if (found1) {
+      foundationPositions["foundation-1"] = {
+        left: found1.getBoundingClientRect().left,
+        top: found1.getBoundingClientRect().top,
+      };
+    }
+    const found2 = document.querySelector("#foundation-2");
+    if (found2) {
+      foundationPositions["foundation-2"] = {
+        left: found2.getBoundingClientRect().left,
+        top: found2.getBoundingClientRect().top,
+      };
+    }
+    const found3 = document.querySelector("#foundation-3");
+    if (found3) {
+      foundationPositions["foundation-3"] = {
+        left: found3.getBoundingClientRect().left,
+        top: found3.getBoundingClientRect().top,
+      };
+    }
+  }, []);
+
   return (
     <>
       {Object.entries(foundation).map(([index, cards]) => (
@@ -457,6 +585,7 @@ function Foundation(): ReactNode {
           place="foundation"
           columnIndex={Number(index)}
           key={index}
+          id={`foundation-${index}`}
           canDrop={cards.length === 0}
         >
           {cards.map((card) => (
@@ -470,6 +599,17 @@ function Foundation(): ReactNode {
 
 function Tableau(): ReactNode {
   const tableau = useAtomValue(tableauAtom);
+  const autoMove = useAtomValue(autoMoveAtom);
+  const autoMoveToFoundation = useSetAtom(autoMoveToFoundationAtom);
+
+  useEffect(() => {
+    const autoMoveHandler = async (): Promise<void> => {
+      console.log("automovehandler");
+      await autoMoveToFoundation();
+    };
+
+    if (autoMove) void autoMoveHandler();
+  }, [autoMove, autoMoveToFoundation]);
 
   return (
     <TableauWrapperStyled>
@@ -502,11 +642,13 @@ function Holder({
   place,
   columnIndex,
   canDrop = true,
+  id,
 }: {
   children: ReactNode;
   place: Place;
   columnIndex: number;
   canDrop?: boolean;
+  id?: string;
 }): ReactNode {
   const moveCard = useSetAtom(moveCardAtom);
 
@@ -529,7 +671,7 @@ function Holder({
   });
 
   return drop(
-    <div>
+    <div id={id}>
       <HolderStyled>{children}</HolderStyled>
     </div>,
   );
@@ -596,16 +738,77 @@ function Pile(): ReactNode {
   );
 }
 
+// Add this helper function to find valid moves
+function findValidFoundationMove(
+  tableau: Record<number, Card[]>,
+  foundation: Record<number, Card[]>,
+): { card: Card; from: number; to: number } | null {
+  // Check each tableau column
+  for (const [fromColumn, cards] of Object.entries(tableau)) {
+    if (cards.length === 0) continue;
+
+    const last = cards.at(-1);
+    if (!last) continue;
+
+    for (const [toColumn, foundationCards] of Object.entries(foundation)) {
+      if (canMoveToFoundation(last, foundationCards)) {
+        return {
+          card: last,
+          from: Number(fromColumn),
+          to: Number(toColumn),
+        };
+      }
+    }
+  }
+  return null;
+}
+
+// Move card to foundation when the game is ready to win (no more cards left in waste/stock and all cards in tableau facing up)
+const autoMoveToFoundationAtom = atomWithWriteOnly(async (get, set) => {
+  const tableau = get(tableauAtom);
+  const foundation = get(foundationAtom);
+  let length = Object.values(tableau).flat().length;
+
+  while (length > 0) {
+    console.log("auto move...");
+    const move = findValidFoundationMove(tableau, foundation);
+    if (move) {
+      console.log(
+        `Moving ${move.card.id} from tableau ${move.from.toString()} to foundation ${move.to.toString()}`,
+      );
+
+      await animateCardToFoundation(move.card, tableau[move.from], move.to);
+
+      const cardIndex = tableau[move.from].findIndex(
+        (c) => c.id === move.card.id,
+      );
+      const [movedCard] = tableau[move.from].splice(cardIndex, 1);
+
+      foundation[move.to].push(movedCard);
+      length--;
+    } else {
+      console.log("no more moves");
+      break;
+    }
+  }
+});
+
 export function Solitaire(): ReactNode {
   const setWaste = useSetAtom(wasteAtom);
   const setFoundation = useSetAtom(foundationAtom);
-  const setTableau = useSetAtom(tableauAtom);
+  const autoMove = useSetAtom(autoMoveToFoundationAtom);
+  const setAutoMove = useSetAtom(autoMoveAtom);
+  const initGame = useSetAtom(initAtom);
 
   const handleNewGame = (): void => {
     setWaste([]);
     setFoundation({ 0: [], 1: [], 2: [], 3: [] });
     stock.length = 0;
-    init(setTableau);
+    initGame();
+  };
+
+  const handleAutoMove = async (): Promise<void> => {
+    await autoMove();
   };
 
   return (
@@ -613,6 +816,16 @@ export function Solitaire(): ReactNode {
       <Toolbar noPadding>
         <Button variant="menu" size="sm" onClick={handleNewGame}>
           New Game
+        </Button>
+        <Button
+          variant="menu"
+          size="sm"
+          onClick={() => {
+            setAutoMove(true);
+            // void handleAutoMove();
+          }}
+        >
+          Auto Move
         </Button>
         <Button variant="menu" size="sm">
           Help
