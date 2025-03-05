@@ -1,12 +1,19 @@
 import type { ReactNode } from "react";
 import type { CSSProperties } from "styled-components";
 
+import { Winmine1 } from "@react95/icons";
 import { motion } from "framer-motion";
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { Button, Toolbar } from "react95";
+import {
+  Button,
+  Toolbar,
+  Window as React95Window,
+  WindowContent,
+  WindowHeader,
+} from "react95";
 import styled from "styled-components";
 
 import { atomWithWriteOnly } from "~/lib/atom-with-write-only";
@@ -51,6 +58,8 @@ const foundationAtom = atom<Record<number, Card[]>>({
 const wasteAtom = atom<Card[]>([]);
 const tableauAtom = atom<Record<number, Card[]>>({});
 const autoMoveAtom = atom<boolean>(false);
+const playTimeAtom = atom<number>(0);
+const openWinWindowAtom = atom<boolean>(false);
 
 interface MoveCardParams {
   card: Card;
@@ -69,11 +78,15 @@ async function animateCardToFoundation(
   card: Card,
   sourceColumn: Card[],
   toColumn: number,
+  zindex: number,
 ): Promise<void> {
   return new Promise<void>((resolve) => {
     const sourceElement = document.querySelector(`#${card.id}`);
-    console.log("Animating", card.id);
     if (sourceElement) {
+      // add z-index style to sourceElement
+      (sourceElement as HTMLElement).style.zIndex = zindex.toString();
+      (sourceElement as HTMLElement).style.position = "relative";
+
       const sourceRect = {
         left: sourceElement.getBoundingClientRect().left,
         top: sourceElement.getBoundingClientRect().top,
@@ -96,14 +109,13 @@ async function animateCardToFoundation(
           },
         ],
         {
-          duration: 500,
+          duration: 200,
           easing: "ease-in-out",
           fill: "forwards",
         },
       );
 
       animation.onfinish = () => {
-        console.log("Done", card.id);
         resolve();
       };
     } else {
@@ -310,6 +322,7 @@ const initAtom = atomWithWriteOnly((get, set) => {
 
   set(autoMoveAtom, false);
   set(tableauAtom, tableau);
+  set(playTimeAtom, 0);
 });
 
 function Game(): ReactNode {
@@ -317,23 +330,11 @@ function Game(): ReactNode {
   const tableau = useAtomValue(tableauAtom);
   const foundation = useAtomValue(foundationAtom);
   const initGame = useSetAtom(initAtom);
+  const playTime = useAtomValue(playTimeAtom);
 
   useEffect(() => {
-    if (initialized.current) {
-      const tableauCards = Object.values(tableau).flat();
-      const foundationCards = new Set(Object.values(foundation).flat());
-      // if is there same card in tableauCards and foundationCards and stock, then return
-      const sameCard = tableauCards.find(
-        (card) => foundationCards.has(card) && stock.includes(card),
-      );
-      if (sameCard) {
-        console.log("same card", sameCard.id);
-        return;
-      }
-      console.log("no same card");
-      return;
-    }
-    console.log("init game");
+    if (initialized.current) return;
+
     initGame();
     initialized.current = true;
   }, [foundation, initGame, tableau]);
@@ -351,6 +352,9 @@ function Game(): ReactNode {
           <Foundation />
         </Upper>
         <Tableau />
+        <span style={{ position: "absolute", bottom: 5, left: 10 }}>
+          Elapsed Time: {Math.floor(playTime / 60)} min {playTime % 60} sec
+        </span>
       </Wrapper>
     </DndProvider>
   );
@@ -447,9 +451,41 @@ const WasteWrapper = styled.div`
 
 function Waste(): ReactNode {
   const waste = useAtomValue(wasteAtom);
+  const tableau = useAtomValue(tableauAtom);
+  const setAutoMove = useSetAtom(autoMoveAtom);
+
+  // check can solved the game by the cards in waste, stock, and tableau are facing up
+  const isCanSolved = useMemo(
+    () =>
+      waste.length === 0 &&
+      stock.length === 0 &&
+      Object.values(tableau).every((cards) =>
+        cards.every((card) => card.facingUp),
+      ),
+    [waste, tableau],
+  );
 
   return (
     <WasteWrapper>
+      {isCanSolved && (
+        <Button
+          variant="menu"
+          size="sm"
+          style={{
+            height: "50px",
+            position: "absolute",
+            transform: "translate(-50%, 50%)",
+            boxShadow: "2px 2px 4px rgba(0, 0, 0, 0.7)",
+            zIndex: 1000,
+          }}
+          onClick={() => {
+            setAutoMove(true);
+          }}
+          title="Auto-solve the game if possible"
+        >
+          Solve game
+        </Button>
+      )}
       {waste.map((card, index) => (
         <CardComponent
           key={card.id}
@@ -494,8 +530,7 @@ function BoardColumn({
         style={{
           position: "absolute",
           left: 0,
-          top: 0,
-          margin: `${(index === 0 ? 0 : 15).toString()}px 0 0 0`,
+          top: index === 0 ? 0 : "15px", // vertical offset for stacking cards
         }}
         canDrag={cards[index].facingUp}
         canDrop={cards.length - 1 === index}
@@ -507,27 +542,25 @@ function BoardColumn({
 
   if (autoMove) {
     return (
-      <TableauColumnStyled>
-        <Holder
-          place="tableau"
-          columnIndex={columnIndex}
-          canDrop={cards.length === 0}
-        >
-          {cards.map((card, index) => (
-            <CardComponent
-              key={card.id}
-              card={card}
-              style={{
-                position: "absolute",
-                left: 0,
-                top: `${String(index * 15)}px`, // vertical offset for stacking cards
-              }}
-              canDrag={false}
-              canDrop={false}
-            />
-          ))}
-        </Holder>
-      </TableauColumnStyled>
+      <Holder
+        place="tableau"
+        columnIndex={columnIndex}
+        canDrop={cards.length === 0}
+      >
+        {cards.map((card, index) => (
+          <CardComponent
+            key={card.id}
+            card={card}
+            style={{
+              position: "absolute",
+              left: 0,
+              top: `${String(index * 15)}px`, // vertical offset for stacking cards
+            }}
+            canDrag={false}
+            canDrop={false}
+          />
+        ))}
+      </Holder>
     );
   }
 
@@ -604,7 +637,6 @@ function Tableau(): ReactNode {
 
   useEffect(() => {
     const autoMoveHandler = async (): Promise<void> => {
-      console.log("automovehandler");
       await autoMoveToFoundation();
     };
 
@@ -763,21 +795,20 @@ function findValidFoundationMove(
   return null;
 }
 
-// Move card to foundation when the game is ready to win (no more cards left in waste/stock and all cards in tableau facing up)
 const autoMoveToFoundationAtom = atomWithWriteOnly(async (get, set) => {
   const tableau = get(tableauAtom);
   const foundation = get(foundationAtom);
   let length = Object.values(tableau).flat().length;
-
+  let zindex = 1;
   while (length > 0) {
-    console.log("auto move...");
     const move = findValidFoundationMove(tableau, foundation);
     if (move) {
-      console.log(
-        `Moving ${move.card.id} from tableau ${move.from.toString()} to foundation ${move.to.toString()}`,
+      await animateCardToFoundation(
+        move.card,
+        tableau[move.from],
+        move.to,
+        zindex++,
       );
-
-      await animateCardToFoundation(move.card, tableau[move.from], move.to);
 
       const cardIndex = tableau[move.from].findIndex(
         (c) => c.id === move.card.id,
@@ -787,18 +818,75 @@ const autoMoveToFoundationAtom = atomWithWriteOnly(async (get, set) => {
       foundation[move.to].push(movedCard);
       length--;
     } else {
-      console.log("no more moves");
       break;
     }
   }
+
+  // handle for win the game by open win window
+  if (length === 0) set(openWinWindowAtom, true);
 });
+
+const WinWindow = styled(React95Window)`
+  width: 300px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+`;
+
+function Win(): ReactNode {
+  const setOpenWinWindow = useSetAtom(openWinWindowAtom);
+  const playTime = useAtomValue(playTimeAtom);
+  return (
+    <WinWindow>
+      <WindowHeader>
+        Congratulations!
+        <Button
+          style={{ position: "absolute", right: "8px", top: "7px" }}
+          size="sm"
+          onClick={() => {
+            setOpenWinWindow(false);
+          }}
+        >
+          X
+        </Button>
+      </WindowHeader>
+      <WindowContent>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            marginBottom: "10px",
+            gap: "10px",
+          }}
+        >
+          <Winmine1 variant="32x32_4" />
+          <div>You won the game!</div>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            marginTop: "10px",
+            gap: "10px",
+          }}
+        >
+          <div>
+            Consumed time in {Math.floor(playTime / 60)} min {playTime % 60} sec
+          </div>
+        </div>
+      </WindowContent>
+    </WinWindow>
+  );
+}
 
 export function Solitaire(): ReactNode {
   const setWaste = useSetAtom(wasteAtom);
   const setFoundation = useSetAtom(foundationAtom);
-  const autoMove = useSetAtom(autoMoveToFoundationAtom);
-  const setAutoMove = useSetAtom(autoMoveAtom);
   const initGame = useSetAtom(initAtom);
+  const [playTime, setPlayTime] = useAtom(playTimeAtom);
+  const openWinWindow = useAtomValue(openWinWindowAtom);
 
   const handleNewGame = (): void => {
     setWaste([]);
@@ -807,9 +895,16 @@ export function Solitaire(): ReactNode {
     initGame();
   };
 
-  const handleAutoMove = async (): Promise<void> => {
-    await autoMove();
-  };
+  useEffect(() => {
+    if (!openWinWindow) {
+      const interval = setInterval(() => {
+        setPlayTime(playTime + 1);
+      }, 1000);
+      return () => {
+        clearInterval(interval);
+      };
+    }
+  }, [playTime, setPlayTime, openWinWindow]);
 
   return (
     <Window window="Solitaire" defaultWidth={1200} defaultHeight={600}>
@@ -817,20 +912,8 @@ export function Solitaire(): ReactNode {
         <Button variant="menu" size="sm" onClick={handleNewGame}>
           New Game
         </Button>
-        <Button
-          variant="menu"
-          size="sm"
-          onClick={() => {
-            setAutoMove(true);
-            // void handleAutoMove();
-          }}
-        >
-          Auto Move
-        </Button>
-        <Button variant="menu" size="sm">
-          Help
-        </Button>
       </Toolbar>
+      {openWinWindow && <Win />}
       <Game />
     </Window>
   );
