@@ -10,6 +10,7 @@ import { ControlPanel } from "./control-panel";
 import { Exception } from "./exception";
 import { NotFound } from "./not-found";
 import { Notepad } from "./notepad";
+import { Solitaire } from "./solitaire";
 import { Welcome } from "./welcome";
 
 interface WindowProps {
@@ -32,6 +33,9 @@ function Window({ window }: WindowProps): ReactNode {
     }
     case "ChatGPT": {
       return <ChatGPT />;
+    }
+    case "Solitaire": {
+      return <Solitaire />;
     }
     case "404": {
       return <NotFound />;
