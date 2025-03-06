@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import type { CSSProperties } from "styled-components";
 
 import { Winmine1 } from "@react95/icons";
-import { motion } from "framer-motion";
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
@@ -360,7 +359,7 @@ function Game(): ReactNode {
   );
 }
 
-const CardStyled = styled(motion.div)<{
+const CardStyled = styled.div<{
   card: Card;
 }>`
   display: flex;
