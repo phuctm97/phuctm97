@@ -3,9 +3,10 @@ import type { CSSProperties } from "styled-components";
 
 import { Winmine1 } from "@react95/icons";
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
+import { HTML5toTouch } from "rdndmb-html5-to-touch";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
+import { MultiBackend, usePreview } from "react-dnd-multi-backend";
 import {
   Button,
   Toolbar,
@@ -20,15 +21,84 @@ import { Window } from "~/lib/window";
 
 import img from "./spritesheet.png";
 
-const cardWidth = 71;
-const cardHeight = 96;
-const backgroundPositionFacingDown = `${(cardWidth * -Math.floor(Math.random() * 12) + 1).toString()}px ${(cardHeight * -4).toString()}px`;
-const backgroundPositionEmpty = `${(cardWidth * -1).toString()}px ${(cardHeight * -5).toString()}px`;
-const absolute: CSSProperties = {
-  position: "absolute",
-  left: 0,
-  top: 0,
+const spriteWidth = 923;
+const spriteHeight = 576;
+const originalCardWidth = 71;
+const originalCardHeight = 96;
+
+let currentCardDimensions = {
+  cardWidth: originalCardWidth,
+  cardHeight: originalCardHeight,
 };
+
+const cardDimensionsAtom = atom({
+  cardWidth: originalCardWidth,
+  cardHeight: originalCardHeight,
+  scale: 1,
+});
+
+// Atom to update card dimensions based on screen size
+const updateCardDimensionsAtom = atom(
+  (get) => get(cardDimensionsAtom),
+  (get, set) => {
+    let scale = 1;
+
+    // For small mobile devices
+    if (
+      typeof matchMedia !== "undefined" &&
+      matchMedia("(max-width: 480px)").matches
+    )
+      scale = 0.5;
+    // For mobile devices
+    else if (
+      typeof matchMedia !== "undefined" &&
+      matchMedia("(max-width: 768px)").matches
+    )
+      scale = 0.7;
+    // For tablets
+    else if (
+      typeof matchMedia !== "undefined" &&
+      matchMedia("(max-width: 1024px)").matches
+    )
+      scale = 0.85;
+
+    const cardWidth = originalCardWidth * scale;
+    const cardHeight = originalCardHeight * scale;
+
+    set(cardDimensionsAtom, {
+      cardWidth,
+      cardHeight,
+      scale,
+    });
+
+    currentCardDimensions = { cardWidth, cardHeight };
+  },
+);
+
+const facingDownRandom = Math.floor(Math.random() * 12) + 1;
+const getBackgroundPositionFacingDown = (
+  cardWidth: number,
+  cardHeight: number,
+): string => {
+  const position = `${(cardWidth * -facingDownRandom).toString()}px ${(cardHeight * -4).toString()}px`;
+  return position;
+};
+
+const getBackgroundPositionEmpty = (
+  cardWidth: number,
+  cardHeight: number,
+): string =>
+  `${(cardWidth * -1).toString()}px ${(cardHeight * -5).toString()}px`;
+
+const getPileMargin = (index: number, scale: number): string => {
+  if (scale <= 0.7) return "0";
+  return index === 0
+    ? "0 0 0 2px"
+    : index === 1
+      ? "2px 0 0 4px"
+      : "3px 0 0 6px";
+};
+
 const stock: Card[] = [];
 
 const foundationPositions: Record<string, { left: number; top: number }> = {};
@@ -90,8 +160,12 @@ async function animateCardToFoundation(
         left: sourceElement.getBoundingClientRect().left,
         top: sourceElement.getBoundingClientRect().top,
       };
+
+      // Calculate stack offset based on current card height
+      const stackOffset = currentCardDimensions.cardHeight * 0.15; // 15% of card height
+
       if (sourceColumn.length > 1)
-        sourceRect.top += (sourceColumn.length - 1) * 15;
+        sourceRect.top += (sourceColumn.length - 1) * stackOffset;
 
       const targetPosition = {
         left: foundationPositions[`foundation-${toColumn.toString()}`].left,
@@ -288,8 +362,7 @@ const initAtom = atomWithWriteOnly((get, set) => {
         facingUp: false,
         place: "tableau",
         column: -1, // temporary
-        backgroundPositionFacingUp: `${(cardWidth * -(number - 1)).toString()}px ${(cardHeight * -index).toString()}px`,
-        backgroundPositionFacingDown,
+        backgroundPositionFacingUp: `${(originalCardWidth * -(number - 1)).toString()}px ${(originalCardHeight * -index).toString()}px`,
       });
     }
   }
@@ -324,12 +397,23 @@ const initAtom = atomWithWriteOnly((get, set) => {
   set(playTimeAtom, 0);
 });
 
+const absolute: CSSProperties = {
+  position: "absolute",
+  left: 0,
+  top: 0,
+};
+
 function Game(): ReactNode {
   const initialized = useRef(false);
   const tableau = useAtomValue(tableauAtom);
   const foundation = useAtomValue(foundationAtom);
   const initGame = useSetAtom(initAtom);
-  const playTime = useAtomValue(playTimeAtom);
+  const dimensions = useAtomValue(cardDimensionsAtom);
+  const updateCardDimensions = useSetAtom(updateCardDimensionsAtom);
+
+  useEffect(() => {
+    updateCardDimensions();
+  }, [updateCardDimensions]);
 
   useEffect(() => {
     if (initialized.current) return;
@@ -341,36 +425,70 @@ function Game(): ReactNode {
   if (Object.keys(tableau).length === 0) return undefined;
 
   return (
-    <DndProvider backend={HTML5Backend}>
+    <DndProvider backend={MultiBackend} options={HTML5toTouch}>
       <Wrapper>
         <Upper>
           <Pile />
           <Waste />
           {/* empty space */}
-          <div style={{ width: cardWidth, height: cardHeight }} />
+          <div
+            style={{
+              width: dimensions.cardWidth,
+              height: dimensions.cardHeight,
+            }}
+          />
           <Foundation />
         </Upper>
         <Tableau />
-        <span style={{ position: "absolute", bottom: 5, left: 10 }}>
-          Elapsed Time: {Math.floor(playTime / 60)} min {playTime % 60} sec
-        </span>
+        <PlayTime />
       </Wrapper>
+      <CardPreview />
     </DndProvider>
   );
 }
+
+const PlayTime = (): ReactNode => {
+  const playTime = useAtomValue(playTimeAtom);
+  return (
+    <span style={{ position: "absolute", bottom: 5, left: 10 }}>
+      Elapsed Time: {Math.floor(playTime / 60)} min {playTime % 60} sec
+    </span>
+  );
+};
+
+const CardPreview = (): ReactNode => {
+  const preview = usePreview<DragItem>();
+  if (!preview.display) return null;
+
+  const { item, style } = preview;
+  return <CardStyled card={item.droppedCard} style={style} />;
+};
 
 const CardStyled = styled.div<{
   card: Card;
 }>`
   display: flex;
   cursor: pointer;
-  width: ${cardWidth}px;
-  height: ${cardHeight}px;
+  width: ${() => useAtomValue(cardDimensionsAtom).cardWidth}px;
+  height: ${() => useAtomValue(cardDimensionsAtom).cardHeight}px;
   background-image: url(${img.src});
-  background-position: ${({ card }) =>
-    card.facingUp
-      ? card.backgroundPositionFacingUp
-      : card.backgroundPositionFacingDown};
+  background-size: ${() => {
+    const { scale } = useAtomValue(cardDimensionsAtom);
+    return scale === 1
+      ? ""
+      : `${String(spriteWidth * scale)}px ${String(spriteHeight * scale)}px`;
+  }};
+  background-position: ${({ card }) => {
+    const { cardWidth, cardHeight, scale } = useAtomValue(cardDimensionsAtom);
+    if (card.facingUp) {
+      const [x, y] = card.backgroundPositionFacingUp?.split(" ") ?? [];
+      const xValue = Number.parseInt(x) * scale;
+      const yValue = Number.parseInt(y) * scale;
+      return `${String(xValue)}px ${String(yValue)}px`;
+    } else {
+      return getBackgroundPositionFacingDown(cardWidth, cardHeight);
+    }
+  }};
 `;
 
 interface CardProps {
@@ -444,8 +562,8 @@ function CardComponent({
 const WasteWrapper = styled.div`
   display: flex;
   position: relative;
-  width: ${cardWidth}px;
-  height: ${cardHeight}px;
+  width: ${() => useAtomValue(cardDimensionsAtom).cardWidth}px;
+  height: ${() => useAtomValue(cardDimensionsAtom).cardHeight}px;
 `;
 
 function Waste(): ReactNode {
@@ -510,7 +628,7 @@ const TableauWrapperStyled = styled.div`
 const TableauColumnStyled = styled.div`
   display: flex;
   position: relative;
-  width: ${cardWidth}px;
+  width: ${() => useAtomValue(cardDimensionsAtom).cardWidth}px;
 `;
 
 function BoardColumn({
@@ -521,6 +639,8 @@ function BoardColumn({
   columnIndex: number;
 }): ReactNode {
   const autoMove = useAtomValue(autoMoveAtom);
+  const { cardHeight } = useAtomValue(cardDimensionsAtom);
+  const stackOffset = cardHeight * 0.15;
 
   let nestedComponents: ReactNode | undefined = undefined;
 
@@ -532,7 +652,7 @@ function BoardColumn({
         style={{
           position: "absolute",
           left: 0,
-          top: index === 0 ? 0 : "15px", // vertical offset for stacking cards
+          top: index === 0 ? 0 : `${String(stackOffset)}px`, // vertical offset for stacking cards
         }}
         canDrag={cards[index].facingUp}
         canDrop={cards.length - 1 === index}
@@ -556,7 +676,7 @@ function BoardColumn({
             style={{
               position: "absolute",
               left: 0,
-              top: `${String(index * 15)}px`, // vertical offset for stacking cards
+              top: `${String(index * stackOffset)}px`, // vertical offset for stacking cards
             }}
             canDrag={false}
             canDrop={false}
@@ -655,12 +775,19 @@ function Tableau(): ReactNode {
 }
 
 const HolderStyled = styled.div`
-  width: ${cardWidth}px;
-  height: ${cardHeight}px;
+  width: ${() => useAtomValue(cardDimensionsAtom).cardWidth}px;
+  height: ${() => useAtomValue(cardDimensionsAtom).cardHeight}px;
   background-image: url(${img.src});
-  background-position: ${(cardWidth * -0).toString()}px
-    ${(cardHeight * -4).toString()}px;
-
+  background-position: ${() => {
+    const { cardWidth, cardHeight } = useAtomValue(cardDimensionsAtom);
+    return `${(cardWidth * -0).toString()}px ${(cardHeight * -4).toString()}px`;
+  }};
+  background-size: ${() => {
+    const { scale } = useAtomValue(cardDimensionsAtom);
+    return scale === 1
+      ? ""
+      : `${String(spriteWidth * scale)}px ${String(spriteHeight * scale)}px`;
+  }};
   border-radius: 5px;
   position: relative;
 `;
@@ -715,28 +842,34 @@ const PileStyled = styled.div`
   display: flex;
   cursor: pointer;
   position: relative;
-  width: ${cardWidth}px;
-  height: ${cardHeight}px;
+  width: ${() => useAtomValue(cardDimensionsAtom).cardWidth}px;
+  height: ${() => useAtomValue(cardDimensionsAtom).cardHeight}px;
 `;
 
 const PileHolderStyled = styled.div<{
-  $index: number;
   $position: string;
+  $margin: string;
 }>`
-  width: ${cardWidth}px;
-  height: ${cardHeight}px;
+  width: ${() => useAtomValue(cardDimensionsAtom).cardWidth}px;
+  height: ${() => useAtomValue(cardDimensionsAtom).cardHeight}px;
   background-image: url(${img.src});
+  background-size: ${() => {
+    const { scale } = useAtomValue(cardDimensionsAtom);
+    return scale === 1
+      ? ""
+      : `${String(spriteWidth * scale)}px ${String(spriteHeight * scale)}px`;
+  }};
   position: absolute;
   left: 0;
   top: 0;
   user-select: none;
   background-position: ${({ $position }) => $position};
-  margin: ${({ $index }) =>
-    $index === 0 ? "0 0 0 2px" : $index === 1 ? "2px 0 0 4px" : "3px 0 0 6px"};
+  margin: ${({ $margin }) => $margin};
 `;
 
 function Pile(): ReactNode {
   const [waste, setWaste] = useAtom(wasteAtom);
+  const { cardWidth, cardHeight, scale } = useAtomValue(cardDimensionsAtom);
   const handlePileClick = useCallback(() => {
     if (stock.length === 0) {
       stock.push(...waste);
@@ -751,20 +884,23 @@ function Pile(): ReactNode {
   return (
     <PileStyled onClick={handlePileClick}>
       {stock.length === 0 ? (
-        <PileHolderStyled $index={0} $position={backgroundPositionEmpty} />
+        <PileHolderStyled
+          $position={getBackgroundPositionEmpty(cardWidth, cardHeight)}
+          $margin="0"
+        />
       ) : (
         <>
           <PileHolderStyled
-            $index={0}
-            $position={backgroundPositionFacingDown}
+            $position={getBackgroundPositionFacingDown(cardWidth, cardHeight)}
+            $margin={getPileMargin(0, scale)}
           />
           <PileHolderStyled
-            $index={1}
-            $position={backgroundPositionFacingDown}
+            $position={getBackgroundPositionFacingDown(cardWidth, cardHeight)}
+            $margin={getPileMargin(1, scale)}
           />
           <PileHolderStyled
-            $index={2}
-            $position={backgroundPositionFacingDown}
+            $position={getBackgroundPositionFacingDown(cardWidth, cardHeight)}
+            $margin={getPileMargin(2, scale)}
           />
         </>
       )}
@@ -887,8 +1023,13 @@ export function Solitaire(): ReactNode {
   const setWaste = useSetAtom(wasteAtom);
   const setFoundation = useSetAtom(foundationAtom);
   const initGame = useSetAtom(initAtom);
-  const [playTime, setPlayTime] = useAtom(playTimeAtom);
+  const setPlayTime = useSetAtom(playTimeAtom);
   const openWinWindow = useAtomValue(openWinWindowAtom);
+  const updateCardDimensions = useSetAtom(updateCardDimensionsAtom);
+
+  useEffect(() => {
+    updateCardDimensions();
+  }, [updateCardDimensions]);
 
   const handleNewGame = (): void => {
     setWaste([]);
@@ -898,15 +1039,16 @@ export function Solitaire(): ReactNode {
   };
 
   useEffect(() => {
-    if (!openWinWindow) {
-      const interval = setInterval(() => {
-        setPlayTime(playTime + 1);
-      }, 1000);
-      return () => {
-        clearInterval(interval);
-      };
-    }
-  }, [playTime, setPlayTime, openWinWindow]);
+    if (openWinWindow) return;
+
+    const interval = setInterval(() => {
+      setPlayTime((previousTime) => previousTime + 1);
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [openWinWindow, setPlayTime]);
 
   return (
     <Window window="Solitaire" defaultWidth={1200} defaultHeight={600}>
