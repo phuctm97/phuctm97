@@ -113,15 +113,18 @@ importers:
       prettier:
         specifier: ^3.3.3
         version: 3.3.3
+      rdndmb-html5-to-touch:
+        specifier: ^9.0.0
+        version: 9.0.0(dnd-core@16.0.1)
       react:
         specifier: ^18.3.1
         version: 18.3.1
       react-dnd:
         specifier: ^16.0.1
         version: 16.0.1(@types/hoist-non-react-statics@3.3.5)(@types/node@20.17.3)(@types/react@18.3.12)(react@18.3.1)
-      react-dnd-html5-backend:
-        specifier: ^16.0.1
-        version: 16.0.1
+      react-dnd-multi-backend:
+        specifier: ^9.0.0
+        version: 9.0.0(dnd-core@16.0.1)(react-dnd@16.0.1(@types/hoist-non-react-statics@3.3.5)(@types/node@20.17.3)(@types/react@18.3.12)(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-dom:
         specifier: ^18.3.1
         version: 18.3.1(react@18.3.1)
@@ -1219,6 +1222,11 @@ packages:
   dnd-core@16.0.1:
     resolution: {integrity: sha512-HK294sl7tbw6F6IeuK16YSBUoorvHpY8RHO+9yFfaJyCDVb6n7PRcezrOEOa2SBCqiYpemh5Jx20ZcjKdFAVng==}
 
+  dnd-multi-backend@9.0.0:
+    resolution: {integrity: sha512-BCUFes4x0LA2bZyEZFHeQzZ1CBZo6PB40zMOG/gNgICxjAZfN2jHgISowqkR1isdx/msUNzscxEb17SP7yc4KQ==}
+    peerDependencies:
+      dnd-core: ^16.0.1
+
   doctrine@2.1.0:
     resolution: {integrity: sha512-35mSku4ZXK0vfCuHEDAwt55dg2jNajHZ1odvF+8SSr82EsZY4QmXfuWso8oEd8zRhVObSN18aM0CjSdoBX7zIw==}
     engines: {node: '>=0.10.0'}
@@ -2216,8 +2224,28 @@ packages:
   queue-microtask@1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
 
+  rdndmb-html5-to-touch@9.0.0:
+    resolution: {integrity: sha512-g8XfS6y+CEFGWdFF5pIqrGSF6bTVe2sB5AIVVoBRIl+FzNuDrc2jpfzUmpsiNvx28l3BRZ91UFP0Mm4zYVJfHA==}
+
   react-dnd-html5-backend@16.0.1:
     resolution: {integrity: sha512-Wu3dw5aDJmOGw8WjH1I1/yTH+vlXEL4vmjk5p+MHxP8HuHJS1lAGeIdG/hze1AvNeXWo/JgULV87LyQOr+r5jw==}
+
+  react-dnd-multi-backend@9.0.0:
+    resolution: {integrity: sha512-LAKDdyj4oMvVA/k2RiJ8KLIPO9sBiYIjIYtoFCuAgml9qQwIq+oTav2IXGfG4DrP49fBnVO7jjf5ofJMNOlWTA==}
+    peerDependencies:
+      dnd-core: ^16.0.1
+      react: ^16.14.0 || ^17.0.2 || ^18.0.0 || ^19.0.0
+      react-dnd: ^16.0.1
+      react-dom: ^16.14.0 || ^17.0.2 || ^18.0.0 || ^19.0.0
+
+  react-dnd-preview@9.0.0:
+    resolution: {integrity: sha512-WZTbrrNDlCGYJGrITHN/obI2kpdaKV3AY6Il2LLZcA9ApzG5bbDXBlWSFwuw8eTCMjmCXs5Wcv+p2QCMxX1Afw==}
+    peerDependencies:
+      react: ^16.14.0 || ^17.0.2 || ^18.0.0 || ^19.0.0
+      react-dnd: ^16.0.1
+
+  react-dnd-touch-backend@16.0.1:
+    resolution: {integrity: sha512-NonoCABzzjyWGZuDxSG77dbgMZ2Wad7eQiCd/ECtsR2/NBLTjGksPUx9UPezZ1nQ/L7iD130Tz3RUshL/ClKLA==}
 
   react-dnd@16.0.1:
     resolution: {integrity: sha512-QeoM/i73HHu2XF9aKksIUuamHPDvRglEwdHL4jsp784BgUuWcg6mzfxT0QDdQz8Wj0qyRKx2eMg8iZtWvU4E2Q==}
@@ -3777,6 +3805,10 @@ snapshots:
       '@react-dnd/invariant': 4.0.2
       redux: 4.2.1
 
+  dnd-multi-backend@9.0.0(dnd-core@16.0.1):
+    dependencies:
+      dnd-core: 16.0.1
+
   doctrine@2.1.0:
     dependencies:
       esutils: 2.0.3
@@ -5113,8 +5145,35 @@ snapshots:
 
   queue-microtask@1.2.3: {}
 
+  rdndmb-html5-to-touch@9.0.0(dnd-core@16.0.1):
+    dependencies:
+      dnd-multi-backend: 9.0.0(dnd-core@16.0.1)
+      react-dnd-html5-backend: 16.0.1
+      react-dnd-touch-backend: 16.0.1
+    transitivePeerDependencies:
+      - dnd-core
+
   react-dnd-html5-backend@16.0.1:
     dependencies:
+      dnd-core: 16.0.1
+
+  react-dnd-multi-backend@9.0.0(dnd-core@16.0.1)(react-dnd@16.0.1(@types/hoist-non-react-statics@3.3.5)(@types/node@20.17.3)(@types/react@18.3.12)(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      dnd-core: 16.0.1
+      dnd-multi-backend: 9.0.0(dnd-core@16.0.1)
+      react: 18.3.1
+      react-dnd: 16.0.1(@types/hoist-non-react-statics@3.3.5)(@types/node@20.17.3)(@types/react@18.3.12)(react@18.3.1)
+      react-dnd-preview: 9.0.0(react-dnd@16.0.1(@types/hoist-non-react-statics@3.3.5)(@types/node@20.17.3)(@types/react@18.3.12)(react@18.3.1))(react@18.3.1)
+      react-dom: 18.3.1(react@18.3.1)
+
+  react-dnd-preview@9.0.0(react-dnd@16.0.1(@types/hoist-non-react-statics@3.3.5)(@types/node@20.17.3)(@types/react@18.3.12)(react@18.3.1))(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+      react-dnd: 16.0.1(@types/hoist-non-react-statics@3.3.5)(@types/node@20.17.3)(@types/react@18.3.12)(react@18.3.1)
+
+  react-dnd-touch-backend@16.0.1:
+    dependencies:
+      '@react-dnd/invariant': 4.0.2
       dnd-core: 16.0.1
 
   react-dnd@16.0.1(@types/hoist-non-react-statics@3.3.5)(@types/node@20.17.3)(@types/react@18.3.12)(react@18.3.1):
